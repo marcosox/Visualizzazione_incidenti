@@ -26,17 +26,20 @@ public class GetCount extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		String collectionName = request.getParameter("collection");
+		String fieldName = request.getParameter("field");
+		response.setContentType("application/json");
+		response.getWriter().print(new Analyzer().getCount(collectionName, fieldName));
+		response.getWriter().flush();
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//TODO: estrarre i parametri della request e passarli al getCount
-		String collectionName = request.getParameter("collection");
-		response.getWriter().println(new Analyzer().getCount(collectionName, "tipo"));
-		
+		System.out.println("Ricevuta una richiesta GET per getCount inattesa, uso una POST");
+		doGet(request,response);		
 	}
 
 }

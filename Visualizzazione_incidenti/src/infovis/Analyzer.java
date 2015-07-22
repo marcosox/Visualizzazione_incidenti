@@ -1,7 +1,11 @@
 package infovis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import org.bson.Document;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.Block;
@@ -12,36 +16,39 @@ import com.mongodb.client.MongoDatabase;
 
 
 public class Analyzer{
+	private String dbName = "bigdata";
 	
-	public Analyzer(){
-
-	}
 	
-	public JSONObject getCount(String collectionName, String field){
-		final JSONObject risultato = new JSONObject();
+	/**
+	 * Effettua il conto dei documenti in una collezione raggruppati in base ad un campo passato come parametro.
+	 * @param collectionName nome della collezione
+	 * @param field campo su cui fare l'aggregazione
+	 * @return un oggetto JSON contenente un array di oggetti ognuno con campi _id e count
+	 */
+	public String getCount(String collectionName, String field){
 		
+		final List<Document> result = new ArrayList<Document>();
 		MongoClient client = new MongoClient();
-		MongoDatabase db = client.getDatabase("bigdata");
+		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		AggregateIterable<Document> iterable = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)))));
-		
+	
 		iterable.forEach(new Block<Document>(){
 			@Override
 			public void apply(Document d) {
-				risultato.put(d.get("_id"), d.get("count"));		// questo warning non mi piace
+				result.add(d);
 			}
 		});
-		
 		client.close();
-		return risultato;
+		return JSONArray.toJSONString(result);
 	}
 	public JSONObject getTotal(String collectionName){
-		final JSONObject risultato = new JSONObject();
-		
+		JSONObject risultato = new JSONObject();
 		MongoClient client = new MongoClient();
-		MongoDatabase db = client.getDatabase("bigdata");
+		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		long totale = collection.count(null);
+		risultato.put("collezione",collectionName);
 		risultato.put("totale", totale);
 		client.close();
 		return risultato;
