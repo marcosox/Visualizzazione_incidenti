@@ -2,7 +2,9 @@ package infovis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 import org.json.simple.JSONArray;
@@ -42,15 +44,16 @@ public class Analyzer{
 		client.close();
 		return JSONArray.toJSONString(result);
 	}
-	public JSONObject getTotal(String collectionName){
-		JSONObject risultato = new JSONObject();
+	
+	public String getTotal(String collectionName){
+		Map<String,String> risultato = new HashMap<String,String>();//JSONObject();
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		long totale = collection.count(null);
 		risultato.put("collezione",collectionName);
-		risultato.put("totale", totale);
+		risultato.put("totale", Long.toString(totale));
 		client.close();
-		return risultato;
+		return JSONObject.toJSONString(risultato);
 	}
 }

@@ -2,23 +2,24 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Charts</title>
+<title>Histogram</title>
 </head>
 
 <body>
 
-	<h1>Bar Chart</h1>
+	<h1>Histogram</h1>
 	<br> Select the data you want to be displayed. click on "sort" to
 	sort columns in descending order.
 	<br>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
 	<div>
 		<select name="menu" id="menu" onchange="refreshChart()">
-			<option value="-">Seleziona un dato da visualizzare</option>
+			<option value="-">Select data to view</option>
 			<option value="veicoli-tipo">Tipologie di veicoli</option>
-			<option value="incidenti-dinamica">Dinamiche degli incidenti</option>
 			<option value="veicoli-marca">Marche di veicoli coinvolte</option>
 			<option value="veicoli-modello">Modelli di veicoli coinvolti</option>
+			<option value="incidenti-dinamica">Dinamiche degli incidenti</option>
+			<option value="incidenti-strada">Strade luogo di incidenti</option>
 		</select><br>
 		<label><input type="checkbox"> Sort values</label><br>
 		<svg id="chart"></svg>
