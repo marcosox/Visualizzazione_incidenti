@@ -1,4 +1,3 @@
-
 (function(app) {
 	
 	app.loadMap = function() {
@@ -30,13 +29,22 @@
 	};
 
 	app.loadScript = function () {
+		
+		if(document.getElementById("google") !=null 
+				|| document.getElementById("google") != undefined){
+			
+			document.getElementById("google").remove();
+		
+			
+		}
+
 		var script = document.createElement('script');
+		script.id = "google";
 		script.type = 'text/javascript';
 		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
 		'callback=app.loadMap';
 		document.body.appendChild(script);
+		
 	};
 
 }(window.app = window.app || {}));
-
-window.onload = app.loadScript();
