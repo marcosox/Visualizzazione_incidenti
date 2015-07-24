@@ -35,8 +35,21 @@ public class GetCount extends HttpServlet {
 		
 		String collectionName = request.getParameter("collection");
 		String fieldName = request.getParameter("field");
+		String limit = request.getParameter("limit");
+		
+		int n=-1;
+		
+		if(limit!=null && !limit.isEmpty()){
+			n = Integer.parseInt(limit);
+			System.out.println(n);
+		}
+		
 		response.setContentType("application/json");
-		response.getWriter().print(new Analyzer().getCount(collectionName, fieldName));
+		if(n!=-1)
+			response.getWriter().print(new Analyzer().getCountLimit(collectionName, fieldName,n));
+		else
+			response.getWriter().print(new Analyzer().getCount(collectionName, fieldName));
+
 		response.getWriter().flush();
 	}
 

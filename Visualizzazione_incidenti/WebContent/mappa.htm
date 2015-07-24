@@ -2,16 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link href="style.css" type="text/css" rel="stylesheet">
 <title>Mappa</title>
-<style>
-html, body, #map-canvas {
-	height: 300px;
-	width: 300px;
-	margin: 0px;
-	padding: 0px
-}
-</style>
- 
 <!-- <script type="text/javascript" src="js/mappa2.js"></script> -->
 <!-- <script id="google" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&callback=app.loadMap"></script> -->
 <script>
@@ -20,11 +12,15 @@ html, body, #map-canvas {
 <script type="text/javascript" src="js/mappa.js"></script>
 </head>
 <body>
-<br/>
-<br/>
-<h1>Mappa dei municipi</h1>
-<br> Qui c'e' la mappa coi municipi e ci metterei una legenda
-sotto tanto per avere un'idea di quanto valgono i colori mostrati.
-<div id="map-canvas"></div>
+	<br />
+	<br />
+	<h1>Mappa dei municipi</h1>
+	<br> Qui c'e' la mappa coi municipi e ci metterei una legenda
+	sotto tanto per avere un'idea di quanto valgono i colori mostrati.
+
+
+	<div id="map_container">
+		<div id="map-canvas"></div>
+	</div>
 </body>
 </html>

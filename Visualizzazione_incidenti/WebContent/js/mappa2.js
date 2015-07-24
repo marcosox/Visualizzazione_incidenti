@@ -5,7 +5,7 @@
 		var roma;
 
 		var mapOptions = {
-			zoom : 12,
+			zoom : 11,
 			center : roma
 		};
 

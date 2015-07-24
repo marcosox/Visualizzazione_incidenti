@@ -2,10 +2,10 @@
  * legge i dati dal database e chiama la funzione di popolamento della chart passandogli il risultato.
  */
 
-function getCount(collection, field) {
+function getCount(collection, field, limit) {
 	$.ajax({
 		type : 'POST',
-		url : "GetCount?collection=" + collection + "&field=" + field,
+		url : "GetCount?collection=" + collection + "&field=" + field +"&limit=" + limit,
 		dataType : 'json',
 		success : function(result) {
 
@@ -49,9 +49,12 @@ function refreshChart() {
 
 	var selection = d3.select("#menu")[0][0].value
 	var collectionName = selection.split("-")[0];	// prendi il nome della collezione
-	var fieldName = selection.split("-")[1];		// prendi il nome del campo su cui aggregare
+	var fieldName = selection.split("-")[1];	
+	
+	var limit = d3.select("#limit")[0][0].value	// prendi il nome del campo su cui aggregare
+	
 	if(collectionName!="" && fieldName!=""){
-		getCount(collectionName, fieldName);			// chiama getCount
+		getCount(collectionName, fieldName, limit);			// chiama getCount
 	}
 }
 

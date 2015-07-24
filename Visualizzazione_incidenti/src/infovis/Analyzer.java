@@ -8,13 +8,9 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.json.simple.JSONObject; 
 
-import com.mongodb.Block;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
+import com.mongodb.Block; 
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
@@ -45,12 +41,12 @@ public class Analyzer {
 
 		List<Document> list = Arrays.asList(
 				new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));
-
-		if (field.equalsIgnoreCase("strada") || field.equalsIgnoreCase("brand") || field.equalsIgnoreCase("model")) {
-			list.add(new Document("$sort", new Document("count", -1)));
-			list.add(new Document("$limit", 20)); // TODO: e' piuttosto brutto
-													// qui dentro questo check
-		}
+			
+		
+		
+//			list.add(new Document("$sort", new Document("count", -1)));
+//			list.add(new Document("$limit", 20)); 
+		
 		iterable = collection.aggregate(list);
 
 		iterable.forEach(new Block<Document>() {
@@ -99,8 +95,8 @@ public class Analyzer {
 			public void apply(Document d) {
 				JSONObject obj = new JSONObject();
 				obj.put("coord", d.get("coord"));
-				obj.put("name", d.get("coord"));
-				obj.put("description", d.get("coord"));
+				obj.put("name", d.get("name"));
+				obj.put("description", d.get("description"));
 				result.add(obj);
 			}
 		});
@@ -118,6 +114,32 @@ public class Analyzer {
 		}
 		client2.close();
 */
+		return JSONArray.toJSONString(result);
+	}
+
+	public String getCountLimit(String collectionName, String fieldName, int n) {
+
+		final List<Document> result = new ArrayList<Document>();
+		MongoClient client = new MongoClient();
+		MongoDatabase db = client.getDatabase(this.dbName);
+		MongoCollection<Document> collection = db.getCollection(collectionName);
+		AggregateIterable<Document> iterable;
+
+		List<Document> list = Arrays.asList(
+				new Document("$group", new Document("_id", "$" + fieldName).append("count", new Document("$sum", 1))),
+				new Document("$sort", new Document("count", -1)),
+				new Document("$limit", n)
+				);
+			
+		iterable = collection.aggregate(list);
+
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(Document d) {
+				result.add(d);
+			}
+		});
+		client.close();
 		return JSONArray.toJSONString(result);
 	}
 }
