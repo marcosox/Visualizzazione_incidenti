@@ -14,13 +14,13 @@ var strada;
 var polilinea;
 
 var bound = new google.maps.LatLngBounds();
-var bound1 = new google.maps.LatLngBounds();
 var bound2 = new google.maps.LatLngBounds();
 var bound3 = new google.maps.LatLngBounds();
 
 var infowindow = new google.maps.InfoWindow(); 
 var geocoder;
-var poligonoArray1 = [];    
+
+ 
 var poligonoArray2 = [];    
 var poligonoArray3 = [];    
 
@@ -359,13 +359,13 @@ function load_municipi(){
 
 	$.ajax({
 		type : 'POST',
-		url: "municipi",
+		url: "Municipi",
 		success: function(result){
 			municipi = result;
 			
-//			for(var i=0; i<municipi.length;i++){
-//				disegnaPoligono1(municipi[i], i);
-//			}
+			for(var i=0; i<municipi.length;i++){
+				disegnaPoligono1(municipi[i], i);
+			}
 
 
 		},
@@ -807,7 +807,9 @@ function reloadMappa3(){
  */
 function disegnaPoligono1(municipio, cont){
  
-	vertici = [];	 
+	vertici = [];	
+	bound1 = new google.maps.LatLngBounds();
+	poligonoArray1 = [];   
 	var zone = municipio.coord.split("-");
 
 	for(var i = 0; i<zone.length;i++){
@@ -827,10 +829,10 @@ function disegnaPoligono1(municipio, cont){
 
 	poligono1 = new google.maps.Polygon({
 		paths: vertici,
-		strokeColor: fillColors[8],
+		strokeColor: "#ffA37A",
 		strokeOpacity:.3,
 		strokeWeight: 2,
-		fillColor: fillColors[8],
+		fillColor: "#ffA37A",
 		fillOpacity: 0.3
 	});
 

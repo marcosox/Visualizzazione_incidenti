@@ -37,8 +37,7 @@ public class Analyzer{
 		
 		if(field.equalsIgnoreCase("strada")||field.equalsIgnoreCase("brand")||field.equalsIgnoreCase("model")){
 			
-			Document group = new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)));
-			
+			Document group = new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)));			
 			iterable = collection.aggregate(Arrays.asList(group, new Document("$sort",new Document("count", -1)), new Document("$limit",20)));
 		
 		}else{
