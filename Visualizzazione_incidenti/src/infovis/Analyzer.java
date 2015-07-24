@@ -35,7 +35,7 @@ public class Analyzer{
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		AggregateIterable<Document> iterable;
 		
-		if(field.equalsIgnoreCase("strada")){
+		if(field.equalsIgnoreCase("strada")||field.equalsIgnoreCase("brand")||field.equalsIgnoreCase("model")){
 			
 			Document group = new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)));
 			
