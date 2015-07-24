@@ -33,7 +33,10 @@ public class Analyzer{
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
-		AggregateIterable<Document> iterable = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)))));
+		AggregateIterable<Document> iterable = 
+				collection.aggregate(
+						Arrays.asList(
+								new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)))));
 	
 		iterable.forEach(new Block<Document>(){
 			@Override
