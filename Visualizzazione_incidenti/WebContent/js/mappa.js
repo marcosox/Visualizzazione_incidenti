@@ -19,7 +19,7 @@ var bound2 = new google.maps.LatLngBounds();
 var bound3 = new google.maps.LatLngBounds();
 
 var infowindow = new google.maps.InfoWindow(); 
-var geocoder = new google.maps.Geocoder();
+var geocoder;
 var poligonoArray1 = [];    
 var poligonoArray2 = [];    
 var poligonoArray3 = [];    
@@ -126,9 +126,9 @@ var marker;
 function geocode(street){
 
 	var image = 'http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.25|0|990000|12|_|';
-
+	geocoder = new google.maps.Geocoder();
 	
-	geocoder.geocode( { 'address': street.innerHTML+" 00100 roma" }, function(results, status) {
+	geocoder.geocode( { 'address': street +" 00100 roma" }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			city = results[0].geometry.location;
 
@@ -137,12 +137,12 @@ function geocode(street){
 				map: map1,
 				draggable:false,
 				icon:image,
-				title:street.innerHTML
+				title:street
 			});	 
 			
-			bound1.extend(city);
-			top10.push(marker);
-			map1.fitBounds(bound1);
+//			bound1.extend(city);
+//			top10.push(marker);
+//			map1.fitBounds(bound1);
 
 		} else {
 			alert('Geocode was not successful for the following reason: ' + status);
@@ -153,6 +153,9 @@ function geocode(street){
 
 
 }
+
+
+
 function load_strade(){
 
 	$.ajax({
@@ -233,8 +236,6 @@ function load_persone(){
 			per = "<p> numero totale persone:  "+persone.totale+""+
 			"<p>eta' media persone coinvolte: "+persone.media_totale.toFixed(2);+"</p>";
 			
-
-
 			document.getElementById("veicoli").innerHTML += per;
 
 

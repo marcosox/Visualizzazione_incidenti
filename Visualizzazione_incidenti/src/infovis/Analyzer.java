@@ -33,11 +33,23 @@ public class Analyzer{
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
-		AggregateIterable<Document> iterable = 
-				collection.aggregate(
-						Arrays.asList(
-								new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)))));
-	
+		AggregateIterable<Document> iterable;
+		
+		if(field.equalsIgnoreCase("strada")){
+			
+			Document group = new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)));
+			
+			iterable = collection.aggregate(Arrays.asList(group, new Document("$sort",new Document("count", -1)), new Document("$limit",20)));
+		
+		}else{
+			
+			iterable = collection.aggregate(
+							Arrays.asList(
+									new Document("$group", new Document("_id", "$"+field).append("count", new Document("$sum", 1)))));
+		
+		}
+		
+		
 		iterable.forEach(new Block<Document>(){
 			@Override
 			public void apply(Document d) {
@@ -45,6 +57,9 @@ public class Analyzer{
 			}
 		});
 		client.close();
+		
+		System.out.println(result.size());
+		
 		return JSONArray.toJSONString(result);
 	}
 	
