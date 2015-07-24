@@ -32,18 +32,18 @@
 		
 		if(document.getElementById("google") !=null 
 				|| document.getElementById("google") != undefined){
-			
-			document.getElementById("google").remove();
-		
-			
+			app.loadMap();
+	
+		}else{
+			var script = document.createElement('script');
+			script.id = "google";
+			script.type = 'text/javascript';
+			script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
+			'callback=app.loadMap';
+			document.body.appendChild(script);
 		}
 
-		var script = document.createElement('script');
-		script.id = "google";
-		script.type = 'text/javascript';
-		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
-		'callback=app.loadMap';
-		document.body.appendChild(script);
+		
 		
 	};
 
