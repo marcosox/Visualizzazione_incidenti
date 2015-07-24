@@ -18,7 +18,6 @@ public class GetCount extends HttpServlet {
      * Default constructor. 
      */
     public GetCount() {
-        // TODO Auto-generated constructor stub
     }
 
 	/**

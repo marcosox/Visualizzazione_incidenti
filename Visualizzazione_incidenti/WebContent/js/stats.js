@@ -1,5 +1,5 @@
 /**
- * 
+ * ottiene il totale e lo visualizza nel rispettivo campo
  */
 function getTotal(collection){
 	$.ajax({
@@ -8,8 +8,8 @@ function getTotal(collection){
 		dataType : 'json',
 		success : function(result) {
 
-			d3.select("#"+result.collezione).html(result.totale);
-			console.log(result);
+			d3.select("#"+result.collezione).text(result.totale);
+			//console.log(result);
 
 		},
 		error : function(result) {
@@ -18,7 +18,7 @@ function getTotal(collection){
 		}
 	});
 }
-// chiama i totali TODO: le collezioni si devono chiamare incidenti, veicoli e persone
+// chiama i totali
 getTotal("veicoli");
 getTotal("persone");
 getTotal("incidenti");

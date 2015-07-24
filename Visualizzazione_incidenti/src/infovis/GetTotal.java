@@ -19,7 +19,6 @@ public class GetTotal extends HttpServlet {
      */
     public GetTotal() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**

@@ -24,10 +24,9 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script type="text/javascript" src="js/mappa2.js"></script>
 </head>
-
 <body>
-
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
@@ -36,18 +35,15 @@
 					aria-controls="navbar">
 					<span class="sr-only">Toggle navigation</span>
 				</button>
-				<a class="navbar-brand" href="index.htm">Visualizzazione
-					Incidenti</a>
+				<a class="navbar-brand" href="index.htm">Visualizzazione Incidenti</a>
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<!-- class="active" per farlo attivo -->
 					<li><a href="#" onclick="$('#container').load('stats.htm');">Statistiche</a></li>
 					<li><a href="#" onclick="$('#container').load('mappa.htm');">Mappa</a></li>
-					<li><a href="#" onclick="$('#container').load('time.htm');">Time
-							Graph</a></li>
-					<li><a href="#"
-						onclick="$('#container').load('barchart.htm');">Histogram</a></li>
+					<li><a href="#" onclick="$('#container').load('time.htm');">TimeGraph</a></li>
+					<li><a href="#"	onclick="$('#container').load('barchart.htm');">Histogram</a></li>
 					<li><a href="#" onclick="$('#container').load('about.htm');">About</a></li>
 				</ul>
 			</div>
@@ -60,23 +56,18 @@
 		<div class="starter-template">
 			<h1>Welcome!</h1>
 			<p class="lead">This is a tool to visualize road accidents data.
-				Click on the tabs at the top of the page and discover all the
-				gadgets.</p>
+				Click on the tabs at the top of the page and discover all the gadgets.</p>
 		</div>
 
 	</div>
 	<!-- /.container -->
 
-
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="bootstrap/js/bootstrap.min.js"></script>
-	
-<script type="text/javascript" src="js/mappa2.js"></script>
-	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="http://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>
