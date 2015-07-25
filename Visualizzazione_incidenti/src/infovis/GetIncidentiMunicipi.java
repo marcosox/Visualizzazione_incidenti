@@ -38,6 +38,16 @@ public class GetIncidentiMunicipi extends HttpServlet {
 		String anno = request.getParameter("anno");
 		String mese = request.getParameter("mese");
 		String giorno = request.getParameter("giorno");
+		
+		System.out.println(anno+"\t"+mese+"\t"+giorno);
+		
+		if(mese.length()==1){
+			mese = "0"+mese;
+		}
+		if(giorno.length()==1){
+			giorno = "0"+giorno;
+		}
+		
 		response.setContentType("application/json");
 		response.getWriter().print(new Analyzer().getIncidentiMunicipi(anno, mese, giorno));
 		response.getWriter().flush();

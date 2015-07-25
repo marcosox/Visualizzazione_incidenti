@@ -98,6 +98,7 @@ public class Analyzer {
 				Map<String,String> mappa = new HashMap<String,String>();
 				mappa.put("coord", d.getString("coord"));
 				mappa.put("name", d.getString("name"));
+				mappa.put("numero", String.valueOf(d.getInteger("numero")));
 				mappa.put("description", d.getString("description"));
 				result.add(new JSONObject(mappa));
 			}
@@ -119,13 +120,14 @@ public class Analyzer {
 		MongoCollection<Document> collection = db.getCollection("incidenti");
 		Document matchFilter = new Document();	// filtro per mese anno e giorno
 		List<Document> aggregationPipeline = new ArrayList<Document>();
-		if(anno!=null){
+		
+		if(anno!=null && !anno.isEmpty()){
 			matchFilter.append("anno", anno);
 		}
-		if(mese!=null){
+		if(mese!=null && !mese.isEmpty()){
 			matchFilter.append("mese", mese);
 		}
-		if(giorno!=null){
+		if(giorno!=null && !giorno.isEmpty()){
 			matchFilter.append("giorno", giorno);
 		}
 		
@@ -146,6 +148,9 @@ public class Analyzer {
 			}
 		});
 		client.close();
+		
+		System.out.println(JSONArray.toJSONString(result));
+		
 		return JSONArray.toJSONString(result);
 	}
 }
