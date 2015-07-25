@@ -21,8 +21,8 @@
 			<option value="incidenti-dinamica">Dinamiche degli incidenti</option>
 			<option value="incidenti-strada">Strade luogo di incidenti</option>
 		</select><br>
-		<label>Limit results to <input type="number" max="7000" name="limit" id="limit" onchange="refreshChart()"> documents.</label>
-		<label><input type="checkbox"> Sort values</label><br>
+		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit" id="limit" onchange="refreshChart();"> documents.</label><br>
+		<label><input type="checkbox" id="sort" checked> Sort values descendingly</label><br>
 		<svg id="chart"></svg>
 		<script src="js/barchart.js">
 		</script>

@@ -52,7 +52,9 @@ function refreshChart() {
 	var fieldName = selection.split("-")[1];	
 	
 	var limit = d3.select("#limit")[0][0].value	// prendi il nome del campo su cui aggregare
-	
+	if(limit<=0 || limit>=100){
+		alert("invalid limit!");	// should never happen
+	}
 	if(collectionName!="" && fieldName!=""){
 		getCount(collectionName, fieldName, limit);			// chiama getCount
 	}
@@ -71,6 +73,9 @@ function draw(result){
 	});
 
 	x.domain(result.map(function(d) {
+		if(d._id=="" || d._id==null){
+			d._id="(no value)";
+		}
 		return d._id;					// assegna il dominio x alle label
 	}));
 	y.domain([ 0, d3.max(result, function(d) {
@@ -88,6 +93,10 @@ function draw(result){
 	.attr("dy", ".15em")
 	.attr("transform", function(d) {
 		return "rotate(-90)";
+	})
+	.append("svg:title")
+	.text(function(d){
+		return d;
 	});
 
 	// asse y
@@ -114,9 +123,13 @@ function draw(result){
 	})
 	.attr("height", function(d) {
 		return height - y(d.count);
+	})
+	.append("svg:title")
+	.text(function(d){
+		return "Count: "+d.count;
 	});
 	
-	d3.select("input").on("change", change);	// listener per la checkbox di sort
+	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
 
 	/**
 	 * La funzione che gestisce la transizione durante il sorting
@@ -125,6 +138,7 @@ function draw(result){
 
 		// Copy-on-write since tweens are evaluated after a
 		// delay.
+		alert("sort clicked");
 		var x0 = x.domain(
 				result.sort(						// sort dei valori
 				this.checked ? function(a, b) {		// se e' checked...

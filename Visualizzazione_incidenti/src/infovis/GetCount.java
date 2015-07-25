@@ -40,16 +40,15 @@ public class GetCount extends HttpServlet {
 		int n=-1;
 		
 		if(limit!=null && !limit.isEmpty()){
-			n = Integer.parseInt(limit);
-			System.out.println(n);
+			try{
+				n = Integer.parseInt(limit);
+			}catch(NumberFormatException e){
+				System.out.println("Error: Number Format Exception for LIMIT parameter, ignoring");
+				n=20;
+			}
 		}
-		
 		response.setContentType("application/json");
-		if(n!=-1)
-			response.getWriter().print(new Analyzer().getCountLimit(collectionName, fieldName,n));
-		else
-			response.getWriter().print(new Analyzer().getCount(collectionName, fieldName));
-
+		response.getWriter().print(new Analyzer().getCount(collectionName, fieldName,n));
 		response.getWriter().flush();
 	}
 

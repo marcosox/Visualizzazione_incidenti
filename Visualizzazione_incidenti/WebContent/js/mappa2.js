@@ -27,7 +27,7 @@
 	};
 
 	app.loadMunicipi = function() {
-		alert("loadMunicipi chiamata");
+		//alert("loadMunicipi chiamata");
 		$.ajax({
 			type : 'POST',
 			url : "Municipi",
@@ -55,7 +55,7 @@
 	app.loadScript = function() {
 
 		if (document.getElementById("google") != null || document.getElementById("google") != undefined) { // se google gia' esiste...
-			alert("trovato script");
+		//	alert("trovato script");
 			app.loadMap(); // carica mappa
 			app.loadMunicipi(); // carica municipi
 		} else { // altrimenti crea lo script

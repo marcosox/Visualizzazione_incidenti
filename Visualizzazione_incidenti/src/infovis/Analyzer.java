@@ -1,15 +1,13 @@
 package infovis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject; 
-
+import org.json.simple.JSONObject;
 import com.mongodb.Block; 
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
@@ -31,7 +29,7 @@ public class Analyzer {
 	 * @return un oggetto JSON contenente un array di oggetti ognuno con campi
 	 *         _id e count
 	 */
-	public String getCount(String collectionName, String field) {
+	public String getCount(String collectionName, String field, int limit) {
 
 		final List<Document> result = new ArrayList<Document>();
 		MongoClient client = new MongoClient();
@@ -39,14 +37,15 @@ public class Analyzer {
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		AggregateIterable<Document> iterable;
 
-		List<Document> list = Arrays.asList(
-				new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));
-			
-		
-		
-//			list.add(new Document("$sort", new Document("count", -1)));
-//			list.add(new Document("$limit", 20)); 
-		
+		List<Document> list = new ArrayList<Document>();
+		list.add(new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));	
+		if(limit>0 && limit <500){
+			list.add(new Document("$sort", new Document("count", -1)));
+			list.add(new Document("$limit", limit));
+		}else{
+			// non dovrebbe accadere a meno che non si cambia a mano nella request http
+			System.out.println("MongoDAO: Invalid LIMIT value, limit unset on query");
+		}
 		iterable = collection.aggregate(list);
 
 		iterable.forEach(new Block<Document>() {
@@ -60,21 +59,23 @@ public class Analyzer {
 	}
 
 	/**
-	 * Conta il totale dei documenti presenti in una collezione.
+	 * Conta i totali dei documenti presenti nelle collezioni veicoli, incidenti, persone.
 	 * 
-	 * @param collectionName
-	 *            la collezione da contare
-	 * @return oggetto JSON con due campi: collezione e totale
+	 * @return un array di oggetti JSON con due campi: collezione e totale, per ogni collezione.
 	 */
 
-	public String getTotal(String collectionName) {
-		Map<String, String> risultato = new HashMap<String, String>();
+	public String getTotals() {
+
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
-		MongoCollection<Document> collection = db.getCollection(collectionName);
-		long totale = collection.count(null);
-		risultato.put("collezione", collectionName);
-		risultato.put("totale", Long.toString(totale));
+		// itera direttamente su queste collezioni e per ognuna conta il totale
+		String[] collectionsList = {"veicoli","incidenti","persone"};
+		Map<String, String> risultato = new HashMap<String,String>();
+		for(String s : collectionsList){
+			MongoCollection<Document> collection = db.getCollection(s);
+			risultato.put(s, Long.toString(collection.count(null)));	// <nome collezione, totale>
+		}
+		
 		client.close();
 		return JSONObject.toJSONString(risultato);
 	}
@@ -93,50 +94,55 @@ public class Analyzer {
 		iterable.forEach(new Block<Document>() {
 			@Override
 			public void apply(Document d) {
-				JSONObject obj = new JSONObject();
-				obj.put("coord", d.get("coord"));
-				obj.put("name", d.get("name"));
-				obj.put("description", d.get("description"));
-				result.add(obj);
+				
+				Map<String,String> mappa = new HashMap<String,String>();
+				mappa.put("coord", d.getString("coord"));
+				mappa.put("name", d.getString("name"));
+				mappa.put("description", d.getString("description"));
+				result.add(new JSONObject(mappa));
 			}
 		});
 		client.close();
-		/********************************************************************/
-	/*	MongoClient client2 = new MongoClient();
-		DB db2 = client2.getDB("bigdata");
-		DBCollection collection2 = db2.getCollection("municipi");
-		DBCursor cursor = collection2.find();
-		JSONArray array = new JSONArray();
-		while (cursor.hasNext()) {
-			//JSONObject obj = (JSONObject) JSONValue.parse(cursor.next().toString());
-			//System.out.println("prima: "+JSONValue.parse(cursor.next().toString()));
-			//array.add(obj);
-		}
-		client2.close();
-*/
 		return JSONArray.toJSONString(result);
 	}
-
-	public String getCountLimit(String collectionName, String fieldName, int n) {
-
-		final List<Document> result = new ArrayList<Document>();
+	/**
+	 * Funzione di utilita' per la visualizzazione sulla mappa degli incidenti
+	 * @param anno anno da filtrare, se null e' ignorato
+	 * @param mese mese da filtrare, se null e' ignorato
+	 * @param giorno giorno da filtrare, se null e' ignorato
+	 * @return array di JSON con 3 campi: numero municipio, numero incidenti nel municipio, totale incidenti.
+	 */
+	public String getIncidentiMunicipi(String anno,String mese, String giorno){
+		
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
-		MongoCollection<Document> collection = db.getCollection(collectionName);
-		AggregateIterable<Document> iterable;
-
-		List<Document> list = Arrays.asList(
-				new Document("$group", new Document("_id", "$" + fieldName).append("count", new Document("$sum", 1))),
-				new Document("$sort", new Document("count", -1)),
-				new Document("$limit", n)
-				);
-			
-		iterable = collection.aggregate(list);
-
+		MongoCollection<Document> collection = db.getCollection("incidenti");
+		Document matchFilter = new Document();	// filtro per mese anno e giorno
+		List<Document> aggregationPipeline = new ArrayList<Document>();
+		if(anno!=null){
+			matchFilter.append("anno", anno);
+		}
+		if(mese!=null){
+			matchFilter.append("mese", mese);
+		}
+		if(giorno!=null){
+			matchFilter.append("giorno", giorno);
+		}
+		
+		final long incidenti = collection.count(matchFilter);	// conta gli incidenti con filtro
+		Document match = new Document("$match",matchFilter);	// includi il filtro in uno stage match della pipeline
+		aggregationPipeline.add(match);
+		aggregationPipeline.add(new Document("$group", new Document("_id", "$numero_gruppo").append("count", new Document("$sum", 1))));
+		AggregateIterable<Document> iterable = collection.aggregate(aggregationPipeline);
+		final List<Document> result = new ArrayList<Document>();
 		iterable.forEach(new Block<Document>() {
 			@Override
 			public void apply(Document d) {
-				result.add(d);
+				Document dc = new Document();
+				dc.append("numero", d.getInteger("_id"));
+				dc.append("incidenti", d.getInteger("count"));
+				dc.append("totale", incidenti);
+				result.add(dc);
 			}
 		});
 		client.close();

@@ -11,7 +11,7 @@ function refreshYear() {
 				return "q" + d + "-11";
 			}));
 
-	var svg = d3.select("body").selectAll("svg").data(d3.range(1990, 2011))
+	var svg = d3.select("#container").selectAll("svg").data(d3.range(2014,2015))
 			.enter().append("svg").attr("width", width).attr("height", height)
 			.attr("class", "RdYlGn").append("g").attr(
 					"transform",
