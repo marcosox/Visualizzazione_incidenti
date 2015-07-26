@@ -37,7 +37,7 @@ public class Municipi extends HttpServlet {
 			throws ServletException, IOException {
 
 		response.setContentType("application/json");
-		response.getWriter().print(new Analyzer().getMunicipi());
+		response.getWriter().print(new MongoDAO().getMunicipi());
 		response.getWriter().flush();
 	}
 }

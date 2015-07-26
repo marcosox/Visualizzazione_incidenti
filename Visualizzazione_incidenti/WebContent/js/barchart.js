@@ -130,7 +130,8 @@ function draw(result){
 	});
 	
 	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
-
+	change();
+//	d3.select("#menu").on("change", change);
 	/**
 	 * La funzione che gestisce la transizione durante il sorting
 	 */
@@ -138,10 +139,9 @@ function draw(result){
 
 		// Copy-on-write since tweens are evaluated after a
 		// delay.
-		alert("sort clicked");
 		var x0 = x.domain(
 				result.sort(						// sort dei valori
-				this.checked ? function(a, b) {		// se e' checked...
+				d3.select("#sort")[0][0].checked ? function(a, b) {		// se e' checked...
 					return b.count - a.count;		// ordini per count
 				} : function(a, b) {				//... altrimenti
 					return d3.ascending(a._id, b._id);	// ordini per id (alfabetico)

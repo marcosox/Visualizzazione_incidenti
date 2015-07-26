@@ -15,7 +15,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class Analyzer {
+public class MongoDAO {
 	private String dbName = "bigdata";
 
 	/**
@@ -111,16 +111,20 @@ public class Analyzer {
 	 * @param anno anno da filtrare, se null e' ignorato
 	 * @param mese mese da filtrare, se null e' ignorato
 	 * @param giorno giorno da filtrare, se null e' ignorato
+	 * @param ora ora da filtrare, se null e' ignorata
 	 * @return array di JSON con 3 campi: numero municipio, numero incidenti nel municipio, totale incidenti.
 	 */
-	public String getIncidentiMunicipi(String anno,String mese, String giorno){
+	public String getIncidentiMunicipi(String anno,String mese, String giorno, String ora){
 		
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection("incidenti");
-		Document matchFilter = new Document();	// filtro per mese anno e giorno
+		Document matchFilter = new Document();	// filtro per mese anno, giorno e ora
 		List<Document> aggregationPipeline = new ArrayList<Document>();
-		
+		// proietto i campi che mi servono cosi' estraggo l'ora
+	/*	Document projection = new Document("$project",new Document("ora",new Document("$hour","$ora")).append("anno", 1)
+				.append("mese", 1).append("giorno", 1).append("numero_gruppo", 1).append("_id", 0));*/
+		//aggregationPipeline.add(projection);
 		if(anno!=null && !anno.isEmpty()){
 			matchFilter.append("anno", anno);
 		}
@@ -130,12 +134,16 @@ public class Analyzer {
 		if(giorno!=null && !giorno.isEmpty()){
 			matchFilter.append("giorno", giorno);
 		}
+		if(ora!=null && !ora.isEmpty()){
+			matchFilter.append("ora", Integer.valueOf(ora));	// ora e' un intero, mese giorno e anno sono stringhe
+		}
 		
 		final long incidenti = collection.count(matchFilter);	// conta gli incidenti con filtro
 		Document match = new Document("$match",matchFilter);	// includi il filtro in uno stage match della pipeline
 		aggregationPipeline.add(match);
 		aggregationPipeline.add(new Document("$group", new Document("_id", "$numero_gruppo").append("count", new Document("$sum", 1))));
 		AggregateIterable<Document> iterable = collection.aggregate(aggregationPipeline);
+		
 		final List<Document> result = new ArrayList<Document>();
 		iterable.forEach(new Block<Document>() {
 			@Override
@@ -149,8 +157,10 @@ public class Analyzer {
 		});
 		client.close();
 		
-		System.out.println(JSONArray.toJSONString(result));
-		
+		// non hai bisogno di queste system.out, puoi stamparti i risultati
+		// direttamente mettendo il nome della servlet nell'url
+		// (e' anche piu' comodo da leggere)
+		//System.out.println(JSONArray.toJSONString(result));
 		return JSONArray.toJSONString(result);
 	}
 }

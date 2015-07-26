@@ -24,6 +24,14 @@
 			app.poligonoArray1[i].setMap(null);
 		}
 		app.poligonoArray1 = [];
+		
+	}
+	app.resetValues = function(){
+		// resetto i conteggi
+		for(i=0;i<app.municipi.length;i++){
+			app.municipi[i].incidenti=0;
+			app.municipi[i].totale=0;
+		}
 	}
 
 
@@ -73,7 +81,13 @@
 			url : "Municipi",
 			dataType : 'json',
 			success : function(result) {
+			//	console.log("temp");
+			//	console.log(result);
+				result.sort(function(a,b){
+					return (a.numero-b.numero);
+				});
 				app.municipi = result;
+				app.loadIncidenti();	// mostra gli incidenti subito
 			},
 			error : function(result) {
 				console.log("Error retrieving municipi");
@@ -141,8 +155,6 @@
 		var n = municipio.incidenti;
 		var tot = municipio.totale;
 		var color = app.fillColors[8];
-		
-	 
 
 		poligono1 = new google.maps.Polygon({
 			paths: vertici,
@@ -168,155 +180,68 @@
 		'</div>'; 
 
 		app.createClickablePoly(poligono1, tooltip, map1);
-
 //		map1.fitBounds(bound1);
-
-
 	};
-
 
 	app.loadIncidenti = function(){
 
 		var anno = $("#anno").val();
 		var mese = $("#mese").val();
 		var giorno = $("#giorno").val();
-
+		var ora = $("#ora").val();
 		var tipo = 1;
 		
-		if(anno.length > 0){
-			
+		if(anno.length > 0){			
 			if(mese.length>0 && giorno.length==0)
 				tipo=2;
 			else if(mese.length>0&&giorno.length>0)
-				tipo=3;
-			
-		}else if(anno.length==0){
-			
+				tipo=3;			
+		}else if(anno.length==0){			
 			if(mese.length>0&&giorno.length>0)
-				tipo=2;
-			
-		}
-		
+				tipo=2;			
+		}		
 
 		$.ajax({
 			type : 'POST',
-			url: "GetIncidentiMunicipi?anno="+anno+"&mese="+mese+"&giorno="+giorno,
+			url: "GetIncidentiMunicipi?anno="+anno+"&mese="+mese+"&giorno="+giorno+"&ora="+ora,
 			success: function(result){
+				//console.log("result");
+				//console.log(result);
+				result.sort(function(a,b){
+					return (a.municipio-b.municipio);
+				});
+				if(result.length==0){
+					alert("Nessun incidente nel periodo selezionato!");
+					app.clearMap();
+					app.resetValues();
+					return;
+				}
+				app.resetValues();
+				var zonaMappa = app.municipi;
 				
-				var temp = app.municipi;
-				
-				for(var i=0; i<temp.length;i++){
-					
-					for(var j=0; j<result.length;j++){
-						
-						if(temp[i].numero==1 && result[j].municipio==1){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
+				for(var j=0; j<result.length;j++){	// per ogni mun riportato
+					for(var i=0; i<zonaMappa.length;i++){	// cicli su tutte le zone
+		//				console.log("i:"+i);
+						numeroMunicipio = result[j].municipio;
+			//			console.log("numero municipio: "+numeroMunicipio);
+						if(numeroMunicipio==zonaMappa[i].numero){	// quando trovi una zona afferente a lui
+							zonaMappa[i].incidenti = result[j]["incidenti"]; // copi
+							zonaMappa[i].totale = result[j]["totale"];
 						}
-						else if(temp[i].numero==2 && result[j].municipio==2){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==3 && result[j].municipio==3){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==4 && result[j].municipio==4){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==5 && result[j].municipio==5){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==6 && result[j].municipio==6){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==7 && result[j].municipio==7){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==8 && result[j].municipio==8){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==9 && result[j].municipio==9){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==10 && result[j].municipio==10){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==11 && result[j].municipio==11){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==12 && result[j].municipio==12){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==13 && result[j].municipio==13){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==14 && result[j].municipio==14){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==15 && result[j].municipio==15){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==23 && result[j].municipio==23){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-
-						}
-						else if(temp[i].numero==26 && result[j].municipio==26){
-							temp[i].incidenti = result[j]["incidenti"];
-							temp[i].totale = result[j]["totale"];
-						
-						}
-						
-						
 					}
-	
 				}
 
 				app.clearMap();
 
-				for(var i=0; i<temp.length;i++){
-					app.drawPoli(temp[i], i,tipo);
+				for(var i=0; i<zonaMappa.length;i++){
+					if(zonaMappa[i].incidenti!=0){
+						app.drawPoli(zonaMappa[i], i,tipo);
+					}
 				}
-				
-//				google.maps.event.trigger(map1, 'resize');
-
+//			google.maps.event.trigger(map1, 'resize');
 			},
 			complete: function () {
 			}
 		});
-
-
-
-
-
-
 	};
-
 }(window.app = window.app || {}));

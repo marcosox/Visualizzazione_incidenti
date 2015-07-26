@@ -35,7 +35,7 @@ public class GetTotal extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		response.setContentType("application/json");
-		response.getWriter().print(new Analyzer().getTotals());
+		response.getWriter().print(new MongoDAO().getTotals());
 		response.getWriter().flush();
 	}
 

@@ -17,10 +17,7 @@ public class GetIncidentiMunicipi extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetIncidentiMunicipi() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+    public GetIncidentiMunicipi() {super();}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,23 +31,23 @@ public class GetIncidentiMunicipi extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// se non presenti restituiscono null che e' esattamente quello che ci serve
+		
 		String anno = request.getParameter("anno");
 		String mese = request.getParameter("mese");
 		String giorno = request.getParameter("giorno");
+		String ora = request.getParameter("ora");
 		
-		System.out.println(anno+"\t"+mese+"\t"+giorno);
+		System.out.println(anno+"\tMese: "+mese+"\tGiorno: "+giorno+"\tOra: "+ora);
 		
-		if(mese.length()==1){
-			mese = "0"+mese;
+	/*	if(mese.length()==1){
+			mese = "0"+mese;	// questa cosa non accade mai, e in piu' mese e giorno possono essere NULL dando exception
 		}
 		if(giorno.length()==1){
 			giorno = "0"+giorno;
 		}
-		
+		*/
 		response.setContentType("application/json");
-		response.getWriter().print(new Analyzer().getIncidentiMunicipi(anno, mese, giorno));
+		response.getWriter().print(new MongoDAO().getIncidentiMunicipi(anno, mese, giorno, ora));
 		response.getWriter().flush();
 	}
-
 }

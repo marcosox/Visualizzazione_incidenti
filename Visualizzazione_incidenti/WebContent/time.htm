@@ -6,13 +6,18 @@
 </head>
 <body>
 <h1>Temporal distribution</h1><br>
-
-
+<div id="year-div">Andamento annuale:
+	<svg id="year-chart"></svg>
+</div>
+<div id="month-div">Andamento mensile:<br>
+	<svg id="month-chart"></svg>
+</div>
+<div>Andamento orario:<br>
+	<svg id="day-chart"></svg>
+</div>
 <script src="js/time.js"></script>
 <script>
-refreshYear();
-refreshMonth();
-refreshDay();
+getCounts();
 </script>
 </body>
 </html>

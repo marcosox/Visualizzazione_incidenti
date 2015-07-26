@@ -48,7 +48,7 @@ public class GetCount extends HttpServlet {
 			}
 		}
 		response.setContentType("application/json");
-		response.getWriter().print(new Analyzer().getCount(collectionName, fieldName,n));
+		response.getWriter().print(new MongoDAO().getCount(collectionName, fieldName,n));
 		response.getWriter().flush();
 	}
 
