@@ -141,7 +141,7 @@ public class Analyzer {
 			@Override
 			public void apply(Document d) {
 				Document dc = new Document();
-				dc.append("numero", d.getInteger("_id"));
+				dc.append("municipio", d.getInteger("_id"));
 				dc.append("incidenti", d.getInteger("count"));
 				dc.append("totale", incidenti);
 				result.add(dc);

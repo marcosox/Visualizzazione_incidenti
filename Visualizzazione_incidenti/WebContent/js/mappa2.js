@@ -5,11 +5,25 @@
 
 	app.poligonoArray1 = [];
 	app.municipi;
+	app.infoWindow = [];
+	
+	app.scaleAnno = d3.scale.linear()  
+    .domain([0,1])
+    .range([.1, .9]);
+	
+	app.scaleMese = d3.scale.linear()  
+    .domain([0,1])
+    .range([.1, .7]);
+	
+	app.scaleGiorno = d3.scale.linear()  
+    .domain([0,1])
+    .range([.1, .5]);
 	
 	app.clearMap = function(){
 		for(var i=0; i<app.poligonoArray1.length;i++){
 			app.poligonoArray1[i].setMap(null);
 		}
+		app.poligonoArray1 = [];
 	}
 
 
@@ -23,7 +37,7 @@
 			}
 			infowindow.setPosition(point);
 			infowindow.open(map);
-			infoWindow.push(infowindow);
+			app.infoWindow.push(infowindow);
 		});
 	}
 
@@ -31,7 +45,7 @@
 		var roma;
 
 		var mapOptions = {
-				zoom : 11,
+				zoom : 10,
 				center : roma
 		};
 
@@ -93,10 +107,8 @@
 	/**
 	 * @param municipio
 	 */
-	app.drawPoli = function(municipio, cont) {
-		
-		
-		
+	app.drawPoli = function(municipio, cont, tipo) {
+	
 		vertici = [];
 		bound1 = new google.maps.LatLngBounds();
 		
@@ -114,22 +126,31 @@
 			}
 		}
 
-		var inc = Number(municipio.incidenti.incidenti)/Number(municipio.incidenti.totale)
+		var inc = Number(municipio.incidenti)/Number(municipio.totale)
 
-		var op=inc;
-		var n = municipio.incidenti.incidenti;
-		var tot = municipio.incidenti.totale;
+		var op;
+		
+		if(tipo==1)
+			op = app.scaleAnno(inc*10).toFixed(1);
+		else if(tipo==2)
+			op = app.scaleMese(inc*10).toFixed(1);
+		else if(tipo==3)
+			op = app.scaleGiorno(inc*10).toFixed(1);
+
+		
+		var n = municipio.incidenti;
+		var tot = municipio.totale;
 		var color = app.fillColors[8];
 		
-	
+	 
 
 		poligono1 = new google.maps.Polygon({
 			paths: vertici,
 			strokeColor: color,
-			strokeOpacity: op*10,
+			strokeOpacity: op,
 			strokeWeight: 2,
 			fillColor: color,
-			fillOpacity: op*10
+			fillOpacity: op
 		});
 
 
@@ -148,7 +169,7 @@
 
 		app.createClickablePoly(poligono1, tooltip, map1);
 
-		map1.fitBounds(bound1);
+//		map1.fitBounds(bound1);
 
 
 	};
@@ -160,6 +181,22 @@
 		var mese = $("#mese").val();
 		var giorno = $("#giorno").val();
 
+		var tipo = 1;
+		
+		if(anno.length > 0){
+			
+			if(mese.length>0 && giorno.length==0)
+				tipo=2;
+			else if(mese.length>0&&giorno.length>0)
+				tipo=3;
+			
+		}else if(anno.length==0){
+			
+			if(mese.length>0&&giorno.length>0)
+				tipo=2;
+			
+		}
+		
 
 		$.ajax({
 			type : 'POST',
@@ -168,124 +205,107 @@
 				
 				var temp = app.municipi;
 				
-				
-				
-	
 				for(var i=0; i<temp.length;i++){
 					
-					
-					
-					if(temp[i].numero==1){
-						temp[i].incidenti = result["1"];
-						temp[i].totale = result["totale"];
+					for(var j=0; j<result.length;j++){
+						
+						if(temp[i].numero==1 && result[j].municipio==1){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+						}
+						else if(temp[i].numero==2 && result[j].municipio==2){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
 
+						}
+						else if(temp[i].numero==3 && result[j].municipio==3){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
 
+						}
+						else if(temp[i].numero==4 && result[j].municipio==4){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==5 && result[j].municipio==5){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==6 && result[j].municipio==6){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==7 && result[j].municipio==7){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==8 && result[j].municipio==8){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==9 && result[j].municipio==9){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==10 && result[j].municipio==10){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==11 && result[j].municipio==11){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==12 && result[j].municipio==12){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==13 && result[j].municipio==13){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==14 && result[j].municipio==14){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==15 && result[j].municipio==15){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==23 && result[j].municipio==23){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+
+						}
+						else if(temp[i].numero==26 && result[j].municipio==26){
+							temp[i].incidenti = result[j]["incidenti"];
+							temp[i].totale = result[j]["totale"];
+						
+						}
+						
+						
 					}
-					if(temp[i].numero==2){
-						temp[i].incidenti = result["2"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==3){
-						temp[i].incidenti = result["3"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==4){
-						temp[i].incidenti = result["4"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==5){
-						temp[i].incidenti = result["5"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==6){
-						temp[i].incidenti = result["6"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==7){
-						temp[i].incidenti = result["7"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==8){
-						temp[i].incidenti = result["8"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==9){
-						temp[i].incidenti = result["9"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==10){
-						temp[i].incidenti = result["10"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==11){
-						temp[i].incidenti = result["11"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==12){
-						temp[i].incidenti = result["12"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==13){
-						temp[i].incidenti = result["13"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==14){
-						temp[i].incidenti = result["14"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==15){
-						temp[i].incidenti = result["15"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==16){
-						temp[i].incidenti = result["16"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==17){
-						temp[i].incidenti = result["17"];
-						temp[i].totale = result["totale"];
-
-					}
-					if(temp[i].numero==18){
-						temp[i].incidenti = result["18"];
-						temp[i].totale = result["totale"];	
-					}	
-
-					if(temp[i].numero==19){
-						temp[i].incidenti = result["19"];
-						temp[i].totale = result["totale"];		
-					}
-
-					if(temp[i].numero==20){
-						temp[i].incidenti = result["20"];
-						temp[i].totale = result["totale"];		
-					}
+	
 				}
 
 				app.clearMap();
-				
-				
 
 				for(var i=0; i<temp.length;i++){
-					app.drawPoli(temp[i], i);
+					app.drawPoli(temp[i], i,tipo);
 				}
 				
-				google.maps.event.trigger(map1, 'resize');
+//				google.maps.event.trigger(map1, 'resize');
 
 			},
 			complete: function () {
