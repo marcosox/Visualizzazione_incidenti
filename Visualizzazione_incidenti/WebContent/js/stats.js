@@ -1,7 +1,7 @@
 /**
  * ottiene il totale e lo visualizza nel rispettivo campo nominato come la collezione
  */
-function getTotal(){
+//function getTotal(){
 	$.ajax({
 		type : 'POST',
 		url : "GetTotal",
@@ -21,24 +21,15 @@ function getTotal(){
 			console.log("risultato: "+result)
 		}
 	});
-/*	$.ajax({
+	$.ajax({
 		type : 'POST',
 		url : "GetCount?collection=incidenti&field=strada",
 		dataType : 'json',
 		success : function(result) {
-			var sum=0;
-			for(i=0;i<result.length;i++){
-				sum+=result[i].count;
-			}
-			console.log(sum);
-			//console.log(result);	// chiama draw e visualizza i dati
-
+			d3.select("#strade").text(result.length);
 		},
 		error : function(result) {
 			alert("Error in retrieving data from the database. ");
 			//console.log(result); //"Data fetch from db failed: "+
 		}
-	});*/
-}
-// chiama i totali
-getTotal();
+	});

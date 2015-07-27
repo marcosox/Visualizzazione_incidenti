@@ -69,14 +69,13 @@ function draw(result){
 	var svg = d3.select("#maing");
 
 	result.forEach(function(d) {
-		d.count = +d.count;
+		d.count = +d.count;	// converte in int
 	});
 
 	x.domain(result.map(function(d) {
 		if(d._id=="" || d._id==null){
-			d._id="(no value)";
-		}
-		return d._id;					// assegna il dominio x alle label
+			return("(no value)");
+		}else return d._id;					// assegna il dominio x alle label
 	}));
 	y.domain([ 0, d3.max(result, function(d) {
 		return d.count;					// dominio y ai valori count
@@ -154,7 +153,7 @@ function draw(result){
 			return x0(a._id) - x0(b._id);
 		});
 
-		var transition = svg.transition().duration(750), delay = function(
+		var transition = svg.transition().duration(500), delay = function(
 				d, i) {		// transizione
 			return i * 50;
 		};
