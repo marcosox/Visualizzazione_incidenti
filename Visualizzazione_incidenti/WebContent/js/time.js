@@ -3,8 +3,7 @@
  */
 function refreshYear(result) {
 
-	d3.select("#year-chart").html("");
-//	console.log(result);
+	
 	width = 960;
 	height = 136;
 	cellSize = 17; // cell size
@@ -12,13 +11,21 @@ function refreshYear(result) {
 	percent = d3.format(".1%");
 	format = d3.time.format("%Y-%m-%d");
 
+	massimo = Math.max.apply(Math,result.map(function(o){return o.count;}));
+	console.log("massimo: "+massimo);
+	
 	color = d3.scale.quantize()
-	.domain([ -.05, .05 ])
-	.range(d3.range(11).map(function(d) {
-		return "q" + d + "-11";
+	.domain([ 0, massimo ])		// dominio valori: da 0 a 100.000 (gli incidenti sono 91.000 in tutto)
+	.range(
+			d3.range(8)		// range colori (8 colori)
+			.map(function(d) {
+		return "color-"+d;
 	}));
 
-	svg = d3.select("#year-div")
+	
+	div = d3.select("#year-div");
+	div.html("");
+	svg = div.selectAll("svg")
 	.data(d3.range(2012, 2015))
 	.enter()
 	.append("svg")		// li appende nel body...perche'?
@@ -66,18 +73,19 @@ function refreshYear(result) {
 	
 	// ********************************** mapping dati
 	var data = d3.nest().key(function(d) {
-		return d._id;
+		return d.data;
 	}).rollup(function(d) {
 		return d[0].count;
 	}).map(result);
-//	console.log(rect);
-	rect.filter(function(d) {
-		//console.log(d);
+
+	rect.filter(function(d) {	// d e' la data, data[d] e' il totale
 		return d in data;	// filtra in base alla data
 	}).attr("class", function(d) {
-		return "day " + color(0.3/*data[d]*/);
+		//console.log("color: "+color(data[d]));
+		//return "day color-"+(data[d]+"");
+		return "day "+color(data[d]);	// colora il giorno in base alla data
 	}).select("title").text(function(d) {
-		return d + ": " /*+ percent(data[d])*/;
+		return d + ": " + (data[d]);
 	});
 
 	function monthPath(t0) {
@@ -129,12 +137,10 @@ function getCounts() {
 	});
 	$.ajax({
 		type : 'POST',
-		url : "GetCount?collection=incidenti&field=anno",
+		url : "GetDailyAccidents",
 		dataType : 'json',
 		success : function(result) {
-			result.sort(function(a, b) {
-				return a._id <= b._id ? (-1) : (1);
-			});
+			
 			refreshYear(result);
 		},
 		error : function(result) {

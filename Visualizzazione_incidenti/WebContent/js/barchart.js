@@ -56,6 +56,18 @@ function refreshChart() {
 		alert("invalid limit!");	// should never happen
 	}
 	if(collectionName!="" && fieldName!=""){
+		if(fieldName=="ora"){
+			d3.select("#limit")[0][0].value = 24;
+			limit=24;
+		}
+		if(fieldName=="mese"){
+			d3.select("#limit")[0][0].value = 12;
+			limit=12;
+		}
+		if(fieldName=="giorno"){
+			d3.select("#limit")[0][0].value = 31;
+			limit=31;
+		}
 		getCount(collectionName, fieldName, limit);			// chiama getCount
 	}
 }

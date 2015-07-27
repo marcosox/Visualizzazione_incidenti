@@ -1,4 +1,4 @@
-package infovis;
+package infovis.persistence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,10 +121,7 @@ public class MongoDAO {
 		MongoCollection<Document> collection = db.getCollection("incidenti");
 		Document matchFilter = new Document();	// filtro per mese anno, giorno e ora
 		List<Document> aggregationPipeline = new ArrayList<Document>();
-		// proietto i campi che mi servono cosi' estraggo l'ora
-	/*	Document projection = new Document("$project",new Document("ora",new Document("$hour","$ora")).append("anno", 1)
-				.append("mese", 1).append("giorno", 1).append("numero_gruppo", 1).append("_id", 0));*/
-		//aggregationPipeline.add(projection);
+		
 		if(anno!=null && !anno.isEmpty()){
 			matchFilter.append("anno", anno);
 		}
@@ -157,10 +154,46 @@ public class MongoDAO {
 		});
 		client.close();
 		
-		// non hai bisogno di queste system.out, puoi stamparti i risultati
-		// direttamente mettendo il nome della servlet nell'url
-		// (e' anche piu' comodo da leggere)
-		//System.out.println(JSONArray.toJSONString(result));
+		return JSONArray.toJSONString(result);
+	}
+
+	/**
+	 * Calcola il totale giornaliero degli incidenti per la visualizzazione sul calendario
+	 * @return un array json con oggetti di tipo <data,totale>
+	 */
+	public String getDailyAccidents() {
+		MongoClient client = new MongoClient();
+		MongoDatabase db = client.getDatabase(this.dbName);
+		MongoCollection<Document> collection = db.getCollection("incidenti");
+		List<Document> aggregationPipeline = new ArrayList<Document>();
+		aggregationPipeline.add(
+				new Document("$group",
+						new Document("_id",
+								new Document("anno","$anno").append("mese","$mese").append("giorno","$giorno"))
+						.append("totale",new Document("$sum",1))));
+		aggregationPipeline.add(
+				new Document("$group",new Document("tot",new Document("$push",new Document("total","$totale"))).append("_id", "$_id")));
+		
+		AggregateIterable<Document> iterable = collection.aggregate(aggregationPipeline);
+		final List<Document> result = new ArrayList<Document>();
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(Document d) {
+				Document dc = new Document();
+				String anno = d.get("_id", Document.class).getString("anno");
+				String mese = d.get("_id", Document.class).getString("mese");
+				String giorno = d.get("_id", Document.class).getString("giorno");
+				@SuppressWarnings("unchecked")
+				ArrayList<Document> lista = d.get("tot",ArrayList.class);	// necessario cast unchecked
+				int count = lista.get(0).getInteger("total");
+				String data = anno+"-"+mese+"-"+giorno;
+				dc.append("data", data);
+				dc.append("count", count);
+				result.add(dc);
+			}
+		});
+		
+		client.close();
 		return JSONArray.toJSONString(result);
 	}
 }
