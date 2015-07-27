@@ -1,7 +1,7 @@
 /**
  * disegna il calendario annuale
  */
-function refreshYear(result) {
+function refreshCalendar(result) {
 
 	
 	width = 960;
@@ -23,7 +23,7 @@ function refreshYear(result) {
 	}));
 
 	
-	div = d3.select("#year-div");
+	div = d3.select("#calendar-div");
 	div.html("");
 	svg = div.selectAll("svg")
 	.data(d3.range(2012, 2015))
@@ -98,50 +98,16 @@ function refreshYear(result) {
 
 	 d3.select(self.frameElement).style("height", "2910px");
 }
-/**
- * disegna il calendario mensile
- */
-function refreshMonth(result) {
 
-}
 function getCounts() {
-	$.ajax({
-		type : 'POST',
-		url : "GetCount?collection=incidenti&field=ora",
-		dataType : 'json',
-		success : function(result) {
-			result.sort(function(a, b) {
-				return a._id <= b._id ? (-1) : (1);
-			});
-			refreshDay(result);
-		},
-		error : function(result) {
-			alert("Error in retrieving data from the database. ");
-			// console.log(result); //"Data fetch from db failed: "+
-		}
-	});
-	$.ajax({
-		type : 'POST',
-		url : "GetCount?collection=incidenti&field=mese",
-		dataType : 'json',
-		success : function(result) {
-			result.sort(function(a, b) {
-				return a._id <= b._id ? (-1) : (1);
-			});
-			refreshMonth(result);
-		},
-		error : function(result) {
-			alert("Error in retrieving data from the database. ");
-			// console.log(result); //"Data fetch from db failed: "+
-		}
-	});
 	$.ajax({
 		type : 'POST',
 		url : "GetDailyAccidents",
 		dataType : 'json',
 		success : function(result) {
 			
-			refreshYear(result);
+			refreshCalendar(result);
+			refreshChart(result);
 		},
 		error : function(result) {
 			alert("Error in retrieving data from the database. ");
@@ -150,63 +116,70 @@ function getCounts() {
 	});
 }
 /**
- * disegna l'istogramma giornaliero
+ * disegna la line chart
  */
-function refreshDay(result) {
+function refreshChart(result) {
+	// Set the dimensions of the canvas / graph
+	var margin = {top: 30, right: 20, bottom: 30, left: 50},
+	    width = 600 - margin.left - margin.right,
+	    height = 270 - margin.top - margin.bottom;
 
-	var margin = {
-		top : 20,
-		right : 20,
-		bottom : 240,
-		left : 80
-	};
-	var width = 1000 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+	// Parse the date / time
+	var parseDate = d3.time.format("%d-%b-%y").parse;
 
-	var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1, 1);
-	var y = d3.scale.linear().range([ height, 0 ]);
-	var xAxis = d3.svg.axis().scale(x).orient("bottom");
-	var yAxis = d3.svg.axis().scale(y).orient("left");
+	// Set the ranges
+	var x = d3.time.scale().range([0, width]);
+	var y = d3.scale.linear().range([height, 0]);
 
-	var svg = d3.select("#day-chart").attr("width", width + margin.left + margin.right).attr("height",
-			height + margin.top + margin.bottom).append("g")
-	// .attr("id", "maing")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	// ************************************************
+	// Define the axes
+	var xAxis = d3.svg.axis().scale(x)
+	    .orient("bottom").ticks(5);
 
-	result.forEach(function(d) {
-		d.count = +d.count;
+	var yAxis = d3.svg.axis().scale(y)
+	    .orient("left").ticks(5);
+
+	// Define the line
+	var valueline = d3.svg.line()
+	    .x(function(d) { return x(d.date); })
+	    .y(function(d) { return y(d.close); });
+	    
+	// Adds the svg canvas
+	var svg = d3.select("#chart-div")
+	    .append("svg")
+	        .attr("width", width + margin.left + margin.right)
+	        .attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+	        .attr("transform", 
+	              "translate(" + margin.left + "," + margin.top + ")");
+
+	// Get the data
+	d3.csv("data.csv", function(error, data) {
+	    data.forEach(function(d) {
+	        d.date = parseDate(d.date);
+	        d.close = +d.close;
+	    });
+
+	    // Scale the range of the data
+	    x.domain(d3.extent(data, function(d) { return d.date; }));
+	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+	    // Add the valueline path.
+	    svg.append("path")
+	        .attr("class", "line")
+	        .attr("d", valueline(data));
+
+	    // Add the X Axis
+	    svg.append("g")
+	        .attr("class", "x axis")
+	        .attr("transform", "translate(0," + height + ")")
+	        .call(xAxis);
+
+	    // Add the Y Axis
+	    svg.append("g")
+	        .attr("class", "y axis")
+	        .call(yAxis);
+
 	});
 
-	x.domain(result.map(function(d) {
-		if (d._id == "" || d._id == null) {
-			d._id = 0;
-		}
-		return d._id; // assegna il dominio x alle label
-	}));
-	y.domain([ 0, d3.max(result, function(d) {
-		return d.count; // dominio y ai valori count
-	}) ]);
-	svg.html(""); // cancella eventuali chart precedenti
-
-	// asse x
-	svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis).selectAll(
-			"text").style("text-anchor", "end").attr("dx", "-.8em").attr("dy", ".15em")
-			.attr("transform", "rotate(-90)").append("svg:title").text(function(d) {
-				return "Fascia oraria " + d + ":00-" + (d + 1) + ":00";
-			});
-
-	// asse y
-	svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("y", 6).attr("dy", ".71em").attr(
-			"transform", "rotate(-90)").style("text-anchor", "end").text("Count");
-
-	// barre sull'asse x
-	svg.selectAll(".bar").data(result).enter().append("rect").attr("class", "bar").attr("x", function(d) {
-		return x(d._id);
-	}).attr("width", x.rangeBand()).attr("y", function(d) {
-		return y(d.count);
-	}).attr("height", function(d) {
-		return height - y(d.count);
-	}).append("svg:title").text(function(d) {
-		return d.count + " incidenti nella fascia oraria " + d._id + "-" + (d._id + 1);
-	});
+	
 }
