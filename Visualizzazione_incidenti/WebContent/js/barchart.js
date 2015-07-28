@@ -148,7 +148,7 @@ function draw(){
 //	d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
 //	console.log(d3.select(".x.axis").selectAll("g").selectAll("text").attr("y"));
 //	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
-//	change();// qui cambia ma poi sparisce
+	change();// qui cambia ma poi sparisce
 
 }
 	/**
@@ -185,15 +185,12 @@ function draw(){
 		transition.select(".x.axis").call(xAxis).selectAll("g")
 				.delay(delay);	// delay per la transizione delle thick sull'asse x
 		
-		
 		d3.select(".x.axis").selectAll("g").selectAll("text")
-		.style("text-anchor", "end")
 		.attr("y","0") // non lo fa.
-		.attr("dx", "-.7em")
-		.attr("dy", ".15em")
+		.attr("dx", "-1em")// verticale
+		.attr("dy", "-.5em") // orizzontale, non toccare
 		.attr("transform", function(d) {
 			return "rotate(-90)";
-		});	// riconfigura il testo altrimenti finisce a meta' dell'asse x
-		
-		
+		})
+		.style("text-anchor", "end");	// riconfigura il testo altrimenti finisce a meta' dell'asse x
 	}
