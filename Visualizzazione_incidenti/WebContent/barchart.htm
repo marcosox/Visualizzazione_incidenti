@@ -29,10 +29,9 @@
 			<option value="incidenti-numero_gruppo">Incidenti per gruppo di polizia municipale intervenuto</option>
 		</select><br>
 		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit" id="limit" onchange="refreshChart();"> elements.</label><br>
-		<label><input type="checkbox" id="sort" checked> Sort descending</label><br>
+		<label><input type="checkbox" id="sort" checked onChange="change()"> Sort descending</label><br>
 		<svg id="chart"></svg>
-		<script src="js/barchart.js">
-		</script>
+		<script src="js/barchart.js"></script>
 	</div>
 </body>
 </html>

@@ -1,15 +1,16 @@
+var dataset; // ci salvo il risultato della request ajax 
+
 /**
  * legge i dati dal database e chiama la funzione di popolamento della chart passandogli il risultato.
  */
-
 function getCount(collection, field, limit) {
 	$.ajax({
 		type : 'POST',
 		url : "GetCount?collection=" + collection + "&field=" + field +"&limit=" + limit,
 		dataType : 'json',
 		success : function(result) {
-
-			draw(result);	// chiama draw e visualizza i dati
+			dataset = result;
+			draw();	// chiama draw e visualizza i dati
 
 		},
 		error : function(result) {
@@ -71,8 +72,8 @@ function refreshChart() {
 			d3.select("#limit")[0][0].value = 31;
 			limit=31;
 		}
-		getCount(collectionName, fieldName, limit);			// chiama getCount
-		d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
+		getCount(collectionName, fieldName, limit);	
+		// chiama getCount
 	}
 }
 
@@ -80,18 +81,19 @@ function refreshChart() {
  * Disegna sulla chart i dati passati con il parametro result
  * @param result i dati da mostrare
  */
-function draw(result){
+function draw(){
 	
 	var svg = d3.select("#maing");
 
-	result.forEach(function(d) {
+	dataset.forEach(function(d) {
 		d.count = +d.count;	// converte in int
 	});
 
-	x.domain(result.map(function(d) {
+	x.domain(dataset.map(function(d) {
 		return d._id;					// assegna il dominio x alle label
 	}));
-	y.domain([ 0, d3.max(result, function(d) {
+	
+	y.domain([ 0, d3.max(dataset, function(d) {
 		return d.count;					// dominio y ai valori count
 	}) ]);
 	svg.html("");		// cancella eventuali chart precedenti
@@ -126,7 +128,7 @@ function draw(result){
 	 
 	// barre sull'asse x
 	svg.selectAll(".bar")
-	.data(result).enter().append("rect")
+	.data(dataset).enter().append("rect")
 	.attr("class","bar")
 	.attr("x", function(d) {
 		return x(d._id);
@@ -142,13 +144,13 @@ function draw(result){
 	.text(function(d){
 		return d._id+": "+d.count;
 	});
-	
-	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
-	change();
+ 
+//	d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
+//	console.log(d3.select(".x.axis").selectAll("g").selectAll("text").attr("y"));
+//	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
+//	change();// qui cambia ma poi sparisce
 
-	d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
-	console.log(d3.select(".x.axis").selectAll("g").selectAll("text").attr("y"));	// qui cambia ma poi sparisce
-
+}
 	/**
 	 * La funzione che gestisce la transizione durante il sorting
 	 */
@@ -157,7 +159,7 @@ function draw(result){
 		// Copy-on-write since tweens are evaluated after a
 		// delay.
 		var x0 = x.domain(
-				result.sort(						// sort dei valori
+				dataset.sort(						// sort dei valori
 				d3.select("#sort")[0][0].checked ? function(a, b) {		// se e' checked...
 					return b.count - a.count;		// ordini per count
 				} : function(a, b) {				//... altrimenti
@@ -183,7 +185,8 @@ function draw(result){
 		transition.select(".x.axis").call(xAxis).selectAll("g")
 				.delay(delay);	// delay per la transizione delle thick sull'asse x
 		
-		d3.select(".x.axis").selectAll("g").selectAll("text").attr("text-anchor", "end");
+//		d3.select(".x.axis").selectAll("g").selectAll("text").attr("text-anchor", "end");
+		
 		d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0") // non lo fa.
 		.attr("dx", "-.7em")
 		.attr("dy", ".15em")
@@ -191,4 +194,3 @@ function draw(result){
 			return "rotate(-90)";
 		});	// riconfigura il testo altrimenti finisce a meta' dell'asse x
 	}
-}
