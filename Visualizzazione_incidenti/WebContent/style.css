@@ -1,114 +1,55 @@
 html {
 	height: 100%;
 }
-
 body {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
 }
-
+table, th, td {
+    border: 1px solid black;
+    text-align:center;
+    padding: 15px;
+}
+td.labels{
+	text-align:left;
+}
+table tr:nth-child(even) {
+    background-color: #eee;
+}
+table tr:nth-child(odd) {
+    background-color: #fff;
+}
 #map-canvas {
 	height: 100%;
 	width: 100%;
 	margin: 0px;
 	padding: 0px
 }
-
-
 #map_container {
-
 	width: 100%;
 	height: 600px;
 }
-
-
-
-
 #dash {
 	width: 100%;
 	height: 50px;
 }
-
-#dashboard_1 {
-	position: absolute;
-	margin-left: 20px;
-}
-
-#dashboard_2 {
-	position: absolute;
-	margin-left: 490px;
-}
-
-#dashboard_3 {
-	position: absolute;
-	margin-left: 930px;
-}
-
-#stats {
-	float:right;
-	position: absolute;
-	background-color: #fcd283;
-	width: 100%;
-	height: 200px;
-}
-
-#strade {
-	position: absolute;
-	margin-left: 50px;
-	height: 200px;
-	width: 350px;
-	overflow: auto;
-
-}
-#veicoli
- {
- 
-	position: relative;
-	float:right;
-	height: 200px;
-	width:280px;
-	overflow: auto;
-
-}
-
-#dinamica{
- 
-	position: relative;
-	float:right;
-	height: 200px;
-	width:300px;
-	overflow: auto;
-
-}
-
-#tipoIncidente
- {
- 	margin-top:20px;
-	position: relative;
-	float:right;
-	height: 200px;
-	width:300px;
-	overflow: auto;
-
-}
-
-
-#headStrade {
-	position: absolute;
-	z-index: 3;
-}
 .axis text {
   font: 10px sans-serif;
+  y:0;
+  x:0;
 }
-
 .axis path,
 .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
-
+.line{
+	fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
 .bar {
   fill: steelblue;
   fill-opacity: .9;
@@ -117,17 +58,16 @@ body {
   fill: #fff;
   stroke: #ccc;
 }
-
 .month {
   fill: none;
   stroke: #000;
   stroke-width: 2px;
 }
-.color-1{fill:rgb(255,255,255)}
-.color-2{fill:rgb(20,255,20)}
-.color-3{fill:rgb(0,100,0)}
-.color-4{fill:#fce94f}	
-.color-5{fill:#edd400}
-.color-6{fill:rgb(255,20,20)}
-.color-7{fill:rgb(127,0,0)}
-.color-8{fill:rgb(0,0,0)}
+.color-0{fill:rgb(160,255,160)}
+.color-1{fill:rgb(60,255,60)}
+.color-2{fill:rgb(20,140,20)}
+.color-3{fill:#f1fa82}	
+.color-4{fill:#fbf20e}
+.color-5{fill:rgb(255,20,20)}
+.color-6{fill:rgb(127,0,0)}
+.color-7{fill:rgb(0,0,0)}

@@ -5,16 +5,17 @@
 <title>Statistiche</title>
 </head>
 <body>
-<h1>Riepilogo del dataset</h1><br>
+<h1>Dataset overview</h1><br>
 <div style="text-align: left;">
-<ul id="lista">
-<li>Veicoli coinvolti: <span id="veicoli"></span>
-<li>Incidenti totali: <span id="incidenti"></span>
-<li>Persone coinvolte: <span id="persone"></span>
-<li>Media veicoli per incidente: <span id="mediaVeicoli"></span>
-<li>Media persone per incidente: <span id="mediaPersone"></span>
-<li>Totale Strade: <span id="strade"></span>
-</ul>
+<table id="lista" style="width:70%">
+<tr><td class="labels"> Incidenti totali</td><td id="incidenti"></td></tr>
+<tr><td class="labels"> Strade</td><td id="strade"></td></tr>
+<tr><td class="labels"> Persone coinvolte</td><td id="persone"></td></tr>
+<tr><td class="labels"> Veicoli</td><td id="veicoli"></td></tr>
+<tr><td class="labels"> Media veicoli per incidente</td><td id="mediaVeicoli"></td></tr>
+<tr><td class="labels"> Media persone per incidente</td><td id="mediaPersone"></td></tr>
+
+</table>
 </div>
 <script src="js/stats.js"></script>
 </body>

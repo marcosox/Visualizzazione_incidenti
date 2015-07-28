@@ -19,14 +19,17 @@
 			<option value="veicoli-brand">Marche di veicoli coinvolte</option>
 			<option value="veicoli-model">Modelli di veicoli coinvolti</option>
 			<option value="incidenti-dinamica">Dinamiche degli incidenti</option>
-			<option value="incidenti-strada">Strade luogo di incidenti</option>
+			<option value="incidenti-strada">Incidenti per via</option>
 			<option value="incidenti-anno">Incidenti per anno</option>
 			<option value="incidenti-mese">Incidenti per mese dell'anno</option>
 			<option value="incidenti-giorno">Incidenti per giorno del mese</option>
-			<option value="incidenti-ora">Incidenti per fascia oraria</option>	
+			<option value="incidenti-ora">Incidenti per fascia oraria</option>
+			<option value="persone-anno">Persone coinvolte per anno di nascita</option>
+			<option value="persone-sesso">Persone coinvolte per genere</option>
+			<option value="incidenti-numero_gruppo">Incidenti per gruppo di polizia municipale intervenuto</option>
 		</select><br>
-		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit" id="limit" onchange="refreshChart();"> documents.</label><br>
-		<label><input type="checkbox" id="sort" checked> Sort values descendingly</label><br>
+		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit" id="limit" onchange="refreshChart();"> elements.</label><br>
+		<label><input type="checkbox" id="sort" checked> Sort descending</label><br>
 		<svg id="chart"></svg>
 		<script src="js/barchart.js">
 		</script>

@@ -18,6 +18,8 @@ function getCount(collection, field, limit) {
 		}
 	});
 }
+
+
 /**
  * qui inizia il codice di inizializzazione della chart
  */
@@ -31,6 +33,7 @@ var width = 1000 - margin.left - margin.right, height = 500 - margin.top
 		- margin.bottom;
 
 var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1, 1);
+
 var y = d3.scale.linear().range([ height, 0 ]);
 var xAxis = d3.svg.axis().scale(x).orient("bottom");
 var yAxis = d3.svg.axis().scale(y).orient("left");
@@ -69,6 +72,7 @@ function refreshChart() {
 			limit=31;
 		}
 		getCount(collectionName, fieldName, limit);			// chiama getCount
+		d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
 	}
 }
 
@@ -85,9 +89,7 @@ function draw(result){
 	});
 
 	x.domain(result.map(function(d) {
-		if(d._id=="" || d._id==null){
-			return("(no value)");
-		}else return d._id;					// assegna il dominio x alle label
+		return d._id;					// assegna il dominio x alle label
 	}));
 	y.domain([ 0, d3.max(result, function(d) {
 		return d.count;					// dominio y ai valori count
@@ -100,8 +102,9 @@ function draw(result){
 	.call(xAxis)
 	.selectAll("text")
 	.style("text-anchor", "end")
-	.attr("dx", "-.8em")
-	.attr("dy", ".15em")
+	.attr("dx", "-.7em")	//-.7em
+	.attr("dy", ".15em")	//.15em
+	.attr("y","0")	// non ne vuole sapere
 	.attr("transform", function(d) {
 		return "rotate(-90)";
 	})
@@ -137,12 +140,15 @@ function draw(result){
 	})
 	.append("svg:title")
 	.text(function(d){
-		return "Count: "+d.count;
+		return d._id+": "+d.count;
 	});
 	
 	d3.select("#sort").on("change", change);	// listener per la checkbox di sort
 	change();
-//	d3.select("#menu").on("change", change);
+
+	d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
+	console.log(d3.select(".x.axis").selectAll("g").selectAll("text").attr("y"));	// qui cambia ma poi sparisce
+
 	/**
 	 * La funzione che gestisce la transizione durante il sorting
 	 */
@@ -177,6 +183,12 @@ function draw(result){
 		transition.select(".x.axis").call(xAxis).selectAll("g")
 				.delay(delay);	// delay per la transizione delle thick sull'asse x
 		
-		d3.select(".x.axis").selectAll("g").selectAll("text").style("text-anchor", "end");	// riconfigura il testo altrimenti finisce a meta' dell'asse x
+		d3.select(".x.axis").selectAll("g").selectAll("text").attr("text-anchor", "end");
+		d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0") // non lo fa.
+		.attr("dx", "-.7em")
+		.attr("dy", ".15em")
+		.attr("transform", function(d) {
+			return "rotate(-90)";
+		});	// riconfigura il testo altrimenti finisce a meta' dell'asse x
 	}
 }
