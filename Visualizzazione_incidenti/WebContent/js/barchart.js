@@ -185,12 +185,15 @@ function draw(){
 		transition.select(".x.axis").call(xAxis).selectAll("g")
 				.delay(delay);	// delay per la transizione delle thick sull'asse x
 		
-//		d3.select(".x.axis").selectAll("g").selectAll("text").attr("text-anchor", "end");
 		
-		d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0") // non lo fa.
+		d3.select(".x.axis").selectAll("g").selectAll("text")
+		.style("text-anchor", "end")
+		.attr("y","0") // non lo fa.
 		.attr("dx", "-.7em")
 		.attr("dy", ".15em")
 		.attr("transform", function(d) {
 			return "rotate(-90)";
 		});	// riconfigura il testo altrimenti finisce a meta' dell'asse x
+		
+		
 	}
