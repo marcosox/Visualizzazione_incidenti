@@ -25,7 +25,7 @@ function refreshCalendar(result) {
 	div = d3.select("#calendar-div");
 	div.html("");
 	svg = div.selectAll("svg")
-	.data(d3.range(2012, 2015))
+	.data(d3.range(2012, 2016))
 	.enter()
 	.append("svg")
 	.attr("width", width)
@@ -104,7 +104,7 @@ function refreshCalendar(result) {
 function refreshChart(result) {
 	// Set the dimensions of the canvas / graph
 	var margin = {top: 30, right: 20, bottom: 30, left: 50},
-	    width = 1000 - margin.left - margin.right,
+	    width = 1200 - margin.left - margin.right,
 	    height = 470 - margin.top - margin.bottom;
 
 	// Parse the date / time

@@ -196,4 +196,60 @@ public class MongoDAO {
 		client.close();
 		return JSONArray.toJSONString(result);
 	}
+
+	/**
+	 * Effettua il conto dei documenti in una collezione raggruppati in base ad
+	 * un campo passato come parametro. Per ogni valore riporta il totale relativo di un
+	 * altro campo passato come parametro.
+	 * es: riporta il conto di ogni veicolo nel database, e per ogni veicolo riporta
+	 * quanti incidenti in una certa via
+	 * 
+	 * @param collectionName
+	 *            nome della collezione
+	 * @param field
+	 *            campo su cui fare l'aggregazione
+	 * @param n
+	 *            limite di risultati restituiti
+	 * @param hField
+	 *            campo del sottovalore da riportare
+	 * @param hCollection
+	 *            collezione del sottovalore
+	 * @param hValue
+	 *            valore su cui filtrare il sottovalore
+	 * @return un oggetto JSON contenente un array di oggetti ognuno con campi
+	 *         _id, count, hCount
+	 */
+	
+	//TODO: per ottenere i subtotali bisogna fare il join perche' magari i valori che cerchi sono in collezioni diverse!
+	// quindi va fatto prima il join e poi l'aggregazione doppia
+	public String getCountWithHighlight(String collectionName, String field, int limit, String hCollection,
+			String hField, String hValue) {
+		final List<Document> result = new ArrayList<Document>();
+		MongoClient client = new MongoClient();
+		MongoDatabase db = client.getDatabase(this.dbName);
+		MongoCollection<Document> collection = db.getCollection(collectionName);
+		AggregateIterable<Document> iterable;
+
+		List<Document> list = new ArrayList<Document>();
+		list.add(new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));	
+		if(limit>0 && limit <500){
+			list.add(new Document("$sort", new Document("count", -1)));
+			list.add(new Document("$limit", limit));
+		}else{
+			// non dovrebbe accadere a meno che non si cambia a mano nella request http
+			System.out.println("MongoDAO: Invalid LIMIT value, limit not set on query");
+		}
+		iterable = collection.aggregate(list);
+
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(Document d) {
+				// TODO: o sottrai qui l'highlight al totale (ne fa gia' parte) oppure lo fai nel js
+				d.append("highlight", (Math.round(Math.random()*10000))); // TODO: per adesso genera valori fittizi
+				result.add(d);
+			}
+		});
+		client.close();
+		return JSONArray.toJSONString(result);
+	}
 }
