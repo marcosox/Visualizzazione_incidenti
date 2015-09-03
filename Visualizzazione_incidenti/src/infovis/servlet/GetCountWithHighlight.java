@@ -36,10 +36,10 @@ public class GetCountWithHighlight extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String collectionName = request.getParameter("collection");
+		//String collectionName = request.getParameter("collection");
 		String fieldName = request.getParameter("field");
 		String limit = request.getParameter("limit");
-		String hCollection = request.getParameter("highlight-collection");
+		//String hCollection = request.getParameter("highlight-collection");
 		String hField = request.getParameter("highlight-field");
 		String hValue = request.getParameter("highlight-value");
 		
@@ -54,7 +54,7 @@ public class GetCountWithHighlight extends HttpServlet {
 			}
 		}
 		response.setContentType("application/json");
-		response.getWriter().print(new MongoDAO().getCountWithHighlight(collectionName, fieldName, n, hCollection, hField, hValue));
+		response.getWriter().print(new MongoDAO().getCountWithHighlight(fieldName, n, hField, hValue));
 		response.getWriter().flush();
 	
 	}

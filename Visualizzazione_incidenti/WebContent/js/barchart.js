@@ -1,15 +1,14 @@
 var dataset; // ci salvo il risultato della request ajax 
 var currentSelection = {}; // global con il campo highlight
-currentSelection.collection = "";
 currentSelection.field = "";
 currentSelection.value = "";
 /**
  * legge i dati dal database e chiama la funzione di popolamento della chart passandogli il risultato.
  */
-function getCount(collection, field, limit) {
+function getCount(field, limit) {
 	$.ajax({
 		type : 'POST',
-		url : "GetCount?collection=" + collection + "&field=" + field +"&limit=" + limit,
+		url : "GetCount?field=" + field +"&limit=" + limit,
 		dataType : 'json',
 		success : function(result) {
 			dataset = result;
@@ -25,12 +24,16 @@ function getCount(collection, field, limit) {
 /**
  * legge i dati dal database e chiama la funzione di popolamento della chart passandogli il risultato.
  */
-function getCountWithHighlight(collection, field, limit) {
+function getCountWithHighlight(field, limit) {
 	$.ajax({
 		type : 'POST',
-		url : "GetCountWithHighlight?collection=" + collection + "&field=" + field +"&limit=" + limit + "&highlight-collection="+currentSelection.collection + "&highlight-field="+ currentSelection.field + "&highlight-value="+currentSelection.value,
+		url : "GetCountWithHighlight?field=" + field +"&limit=" + limit + "&highlight-field="+ currentSelection.field + "&highlight-value="+currentSelection.value,
 		dataType : 'json',
 		success : function(result) {
+			
+			for(i=0;i<result.length;i++){
+				result[i].count=result[i].count-result[i].highlight;
+			}
 			
 			drawHighlightChart(result);	// chiama draw e visualizza i dati
 
@@ -74,27 +77,26 @@ var svg = d3.select("#chart")
 function refreshChart() {
 
 	var selection = d3.select("#menu")[0][0].value
-	var collectionName = selection.split("-")[0];	// prendi il nome della collezione
-	var fieldName = selection.split("-")[1];	
+	
 	
 	var limit = d3.select("#limit")[0][0].value	// prendi il nome del campo su cui aggregare
 	if(limit<=0 || limit>=100){
 		alert("invalid limit!");	// should never happen
 	}
-	if(collectionName!="" && fieldName!=""){
-		if(fieldName=="ora"){
+	if( selection !=""){
+		if(selection=="ora"){
 			d3.select("#limit")[0][0].value = 24;
 			limit=24;
 		}
-		if(fieldName=="mese"){
+		if(selection=="mese"){
 			d3.select("#limit")[0][0].value = 12;
 			limit=12;
 		}
-		if(fieldName=="giorno"){
+		if(selection=="giorno"){
 			d3.select("#limit")[0][0].value = 31;
 			limit=31;
 		}
-		getCount(collectionName, fieldName, limit);	
+		getCount(selection, limit);	
 		// chiama getCount
 	}
 }
@@ -222,7 +224,6 @@ function highLightItem(d,i){
 	if(d3.selectAll(".bar")[0][i].style.fill!=""){	// se clicchi su una gia' scelta, viene cancellata la selezione
 	
 		d3.selectAll(".bar")[0][i].style.fill="";
-		currentSelection.collection = "";
 		currentSelection.field = "";
 		currentSelection.value = "";
 		d3.select("#highlight-div")[0][0].style.display="none";		// nasconde la seconda chart
@@ -233,12 +234,11 @@ function highLightItem(d,i){
 		d3.selectAll(".bar")[0].forEach(function(d){d.style.fill=""});	// resetta il colore di tutte le barre
 		d3.selectAll(".bar")[0][i].style.fill="red";	// evidenzia quella selezionata di rosso
 		// salva le variabili necessarie
-		currentSelection.collection = d3.select("#menu")[0][0].value.split("-")[0];
-		currentSelection.field = d3.select("#menu")[0][0].value.split("-")[1];
+		currentSelection.field = d3.select("#menu")[0][0].value;
 		currentSelection.value = d._id;
 	}
 	
-	console.log("Highlight su: "+currentSelection.collection+"."+currentSelection.field+" = "+currentSelection.value);
+	console.log("Highlight su: "+currentSelection.field+" = "+currentSelection.value);
 	refresh2();
 }
 
@@ -246,16 +246,14 @@ function highLightItem(d,i){
  * refresh la seconda chart
  */
 function refresh2(){
-	selection = d3.select("#menu2")[0][0].value
-	console.log("selection: "+selection);
-	collectionName = selection.split("-")[0];	// prendi il nome della collezione
-	fieldName = selection.split("-")[1];	
+	
+	fieldName = d3.select("#menu2")[0][0].value	
 	
 	var limit = d3.select("#limit2")[0][0].value	// prendi il nome del campo su cui aggregare
 	if(limit<=0 || limit>=100){
 		alert("invalid limit!");	// should never happen
 	}
-	if(collectionName!="" && fieldName!=""){
+	if(fieldName!=""){
 		if(fieldName=="ora"){
 			d3.select("#limit2")[0][0].value = 24;
 			limit=24;
@@ -268,8 +266,8 @@ function refresh2(){
 			d3.select("#limit2")[0][0].value = 31;
 			limit=31;
 		}
-		d3.select("#highlight-label").html("Visualizzo i dati di <strong>"+collectionName+"."+fieldName+"</strong> evidenziando i dati dove <strong>"+currentSelection.collection+"."+currentSelection.field+"="+currentSelection.value+"</strong>");
-		getCountWithHighlight(collectionName,fieldName,limit);
+		d3.select("#highlight-label").html("Visualizzo <strong>"+fieldName+"</strong> evidenziando gli incidenti in cui <strong>"+currentSelection.field+"="+currentSelection.value+"</strong>");
+		getCountWithHighlight(fieldName,limit);
 	}
 }
 		
@@ -288,7 +286,7 @@ function drawHighlightChart(result){
     z = d3.scale.ordinal().range(["lightblue", "red"]),
     format = d3.time.format("%b");
 
-var svg = d3.select("#chart2")
+ svg = d3.select("#chart2")
     .attr("width", width2)
     .attr("height", height2)
   .append("svg:g")
@@ -322,7 +320,12 @@ var svg = d3.select("#chart2")
       .attr("x", function(d) { return x(d.x); })
       .attr("y", function(d) { return -y(d.y0) - y(d.y); })
       .attr("height", function(d) { return y(d.y); })
-      .attr("width", x.rangeBand());
+      .attr("width", x.rangeBand())
+      .append("svg:title")
+      .text(function(d){
+    	  //console.log(d);
+    	  return d.x+": "+d.y;
+      });
 
  /* // Add a label per date.
   var label = svg.selectAll("text")
@@ -350,23 +353,19 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
 	.attr("transform", "translate(0," + height2 + ")")
 	.call(xAxis2)
 	.selectAll("text")
-	.style("text-anchor", "end")
-	.attr("dx", "-.7em")	//-.7em
-	.attr("dy", ".15em")	//.15em
+	//.style("text-anchor", "end")
+	.attr("dx", "0")	//-.7em
+	.attr("dy", "0")	//.15em
 	.attr("y","0")	// non ne vuole sapere
-	.attr("transform", function(d) {
+	/*.attr("transform", function(d) {
 		return "rotate(-90)";
-	})
+	})*/
 	.append("svg:title")
 	.text(function(d){
+		//console.log(d);
 		return d;
 	});
-  
-  
-  
-  
-  
-  
+ 
 
   // Add y-axis rules.
   var rule = svg.selectAll("g.rule")
@@ -381,8 +380,8 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
       .style("stroke-opacity", function(d) { return d ? .7 : null; });
 
   rule.append("svg:text")
-      .attr("x", width2 - p[1] - p[3] + 6)
+      .attr("x", width2 - p[1] - p[3])
       .attr("dy", ".35em")
-      .text(d3.format(",d"));
+      .text(function(d){return d;});
 
 }

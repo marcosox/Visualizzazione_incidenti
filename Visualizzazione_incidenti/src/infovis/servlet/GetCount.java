@@ -35,7 +35,7 @@ public class GetCount extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String collectionName = request.getParameter("collection");
+		//String collectionName = request.getParameter("collection");
 		String fieldName = request.getParameter("field");
 		String limit = request.getParameter("limit");
 		
@@ -50,7 +50,7 @@ public class GetCount extends HttpServlet {
 			}
 		}
 		response.setContentType("application/json");
-		response.getWriter().print(new MongoDAO().getCount(collectionName, fieldName,n));
+		response.getWriter().print(new MongoDAO().getCount(fieldName,n));
 		response.getWriter().flush();
 	}
 

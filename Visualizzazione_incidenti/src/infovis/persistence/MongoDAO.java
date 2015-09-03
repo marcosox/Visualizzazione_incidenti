@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bson.Document;
 import org.json.simple.JSONArray;
@@ -17,6 +18,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDAO {
 	private String dbName = "bigdata";
+	private String collectionName = "incidenti_finale";
 
 	/**
 	 * Effettua il conto dei documenti in una collezione raggruppati in base ad
@@ -29,7 +31,7 @@ public class MongoDAO {
 	 * @return un oggetto JSON contenente un array di oggetti ognuno con campi
 	 *         _id e count
 	 */
-	public String getCount(String collectionName, String field, int limit) {
+	public String getCount(String field, int limit) {
 
 		final List<Document> result = new ArrayList<Document>();
 		MongoClient client = new MongoClient();
@@ -38,7 +40,12 @@ public class MongoDAO {
 		AggregateIterable<Document> iterable;
 
 		List<Document> list = new ArrayList<Document>();
-		list.add(new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));	
+		list.add(new Document("$project",new Document("field","$"+field)));
+		if(field.contains(".")){
+			list.add(new Document("$unwind","$field"));
+		}
+		list.add(new Document("$group", new Document("_id", "$field").append("count", new Document("$sum", 1))));	
+		
 		if(limit>0 && limit <500){
 			list.add(new Document("$sort", new Document("count", -1)));
 			list.add(new Document("$limit", limit));
@@ -46,6 +53,7 @@ public class MongoDAO {
 			// non dovrebbe accadere a meno che non si cambia a mano nella request http
 			System.out.println("MongoDAO: Invalid LIMIT value, limit unset on query");
 		}
+		
 		iterable = collection.aggregate(list);
 
 		iterable.forEach(new Block<Document>() {
@@ -68,12 +76,19 @@ public class MongoDAO {
 
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
-		// itera direttamente su queste collezioni e per ognuna conta il totale
-		String[] collectionsList = {"veicoli","incidenti","persone"};
+		MongoCollection<Document> incidenti = db.getCollection(collectionName);
 		Map<String, String> risultato = new HashMap<String,String>();
+		risultato.put("incidenti",Long.toString(incidenti.count(null)));
+		
+		// itera direttamente su queste collezioni e per ognuna conta il totale
+		String[] collectionsList = {"veicoli","persone"};
+		
 		for(String s : collectionsList){
-			MongoCollection<Document> collection = db.getCollection(s);
-			risultato.put(s, Long.toString(collection.count(null)));	// <nome collezione, totale>
+			List<Document> pipeline = new ArrayList<Document>();
+			pipeline.add(new Document("$unwind","$"+s));
+			pipeline.add(new Document("$group",new Document("_id","null").append("count", new Document("$sum",1))));
+			AggregateIterable<Document> result = incidenti.aggregate(pipeline);
+			risultato.put(s,result.first().getInteger("count").toString());
 		}
 		
 		client.close();
@@ -118,7 +133,7 @@ public class MongoDAO {
 		
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
-		MongoCollection<Document> collection = db.getCollection("incidenti");
+		MongoCollection<Document> collection = db.getCollection(collectionName);
 		Document matchFilter = new Document();	// filtro per mese anno, giorno e ora
 		List<Document> aggregationPipeline = new ArrayList<Document>();
 		
@@ -164,7 +179,7 @@ public class MongoDAO {
 	public String getDailyAccidents() {
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
-		MongoCollection<Document> collection = db.getCollection("incidenti");
+		MongoCollection<Document> collection = db.getCollection(collectionName);
 		List<Document> aggregationPipeline = new ArrayList<Document>();
 		aggregationPipeline.add(
 				new Document("$group",
@@ -198,58 +213,87 @@ public class MongoDAO {
 	}
 
 	/**
-	 * Effettua il conto dei documenti in una collezione raggruppati in base ad
+	 * Effettua il conto dei documenti raggruppati in base ad
 	 * un campo passato come parametro. Per ogni valore riporta il totale relativo di un
 	 * altro campo passato come parametro.
 	 * es: riporta il conto di ogni veicolo nel database, e per ogni veicolo riporta
 	 * quanti incidenti in una certa via
 	 * 
-	 * @param collectionName
-	 *            nome della collezione
 	 * @param field
 	 *            campo su cui fare l'aggregazione
 	 * @param n
 	 *            limite di risultati restituiti
 	 * @param hField
 	 *            campo del sottovalore da riportare
-	 * @param hCollection
-	 *            collezione del sottovalore
 	 * @param hValue
 	 *            valore su cui filtrare il sottovalore
-	 * @return un oggetto JSON contenente un array di oggetti ognuno con campi
-	 *         _id, count, hCount
+	 * @return un oggetto JSON contenente un array di documenti ognuno con campi
+	 *         _id, count, highlight
 	 */
 	
-	//TODO: per ottenere i subtotali bisogna fare il join perche' magari i valori che cerchi sono in collezioni diverse!
-	// quindi va fatto prima il join e poi l'aggregazione doppia
-	public String getCountWithHighlight(String collectionName, String field, int limit, String hCollection,
-			String hField, String hValue) {
+	public String getCountWithHighlight( String field, int limit, String hField, String hValue) {
+
 		final List<Document> result = new ArrayList<Document>();
 		MongoClient client = new MongoClient();
 		MongoDatabase db = client.getDatabase(this.dbName);
 		MongoCollection<Document> collection = db.getCollection(collectionName);
-		AggregateIterable<Document> iterable;
 
 		List<Document> list = new ArrayList<Document>();
-		list.add(new Document("$group", new Document("_id", "$" + field).append("count", new Document("$sum", 1))));	
+		List<Document> listWithMatch = new ArrayList<Document>();
+		listWithMatch.add(new Document("$match",new Document(hField,hValue)));
+		list.add(new Document("$project",new Document("field","$"+field)));
+		listWithMatch.add(new Document("$project",new Document("field","$"+field)));
+		if(field.contains(".")){
+			list.add(new Document("$unwind","$field"));
+			listWithMatch.add(new Document("$unwind","$field"));
+		}
+		list.add(new Document("$group", new Document("_id", "$field").append("count", new Document("$sum", 1))));
+		listWithMatch.add(new Document("$group", new Document("_id", "$field").append("count", new Document("$sum", 1))));
+		
 		if(limit>0 && limit <500){
 			list.add(new Document("$sort", new Document("count", -1)));
+			listWithMatch.add(new Document("$sort", new Document("count", -1)));
 			list.add(new Document("$limit", limit));
+			//listWithMatch.add(new Document("$limit", limit));
 		}else{
 			// non dovrebbe accadere a meno che non si cambia a mano nella request http
-			System.out.println("MongoDAO: Invalid LIMIT value, limit not set on query");
+			System.out.println("MongoDAO: Invalid LIMIT value, limit unset on query");
 		}
-		iterable = collection.aggregate(list);
-
-		iterable.forEach(new Block<Document>() {
+		
+		AggregateIterable<Document> iterable1 = collection.aggregate(list);
+		AggregateIterable<Document> iterable2 = collection.aggregate(listWithMatch);
+		
+		final Map<String,Document> map = new HashMap<String,Document>();
+		iterable1.forEach(new Block<Document>() {
 			@Override
 			public void apply(Document d) {
-				// TODO: o sottrai qui l'highlight al totale (ne fa gia' parte) oppure lo fai nel js
-				d.append("highlight", (Math.round(Math.random()*10000))); // TODO: per adesso genera valori fittizi
-				result.add(d);
+				System.out.println("iterable1: "+d.toJson());
+				map.put(d.get("_id").toString(),d);
 			}
 		});
+		
+		iterable2.forEach(new Block<Document>() {
+			@Override
+			public void apply(Document d) {
+			//	System.out.println("iterable2: "+d.toJson());
+			//	System.out.println("_id: "+d.get("_id").toString());
+			//	System.out.println("mappa:"+map.keySet().toString());
+				Document entry = map.get(d.get("_id").toString());
+				if(entry!=null){
+			//		System.out.println("from map: "+entry.toJson());
+					entry.append("highlight",d.get("count"));			
+				}
+			}
+		});
+		for(Entry<String,Document> e : map.entrySet()){
+			if(!e.getValue().containsKey("highlight")){
+				System.out.println("aggiungo un highlight=0 a "+e.getKey());
+				e.getValue().append("highlight", 0);
+			}
+			result.add(e.getValue());
+		}
 		client.close();
+		
 		return JSONArray.toJSONString(result);
 	}
 }
