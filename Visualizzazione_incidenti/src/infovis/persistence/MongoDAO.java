@@ -121,6 +121,34 @@ public class MongoDAO {
 		client.close();
 		return JSONArray.toJSONString(result);
 	}
+	
+	/**
+	 * Recupera tutti gli incidenti e li ritorna in una lista per visualizzarli sulla mappa
+	 * @return una lista di oggetti {lat,lon,protocollo}
+	 */
+	public String getIncidenti(){
+		final List<JSONObject> result = new ArrayList<JSONObject>();
+		MongoClient client = new MongoClient();
+		MongoDatabase db = client.getDatabase(this.dbName);
+		MongoCollection<Document> collection = db.getCollection(collectionName);
+		FindIterable<Document> iterable = collection.find();
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(Document d) {
+				
+				Map<String,String> mappa = new HashMap<String,String>();
+				if(d.getString("lat")!=null){
+					mappa.put("lat", d.getString("lat"));
+					mappa.put("lon", d.getString("lon"));
+					mappa.put("protocollo", d.getString("incidente").replace("incidente", ""));
+					result.add(new JSONObject(mappa));
+				}
+			}
+		});
+		client.close();
+		return JSONArray.toJSONString(result);
+	}
+	
 	/**
 	 * Funzione di utilita' per la visualizzazione sulla mappa degli incidenti
 	 * @param anno anno da filtrare, se null e' ignorato

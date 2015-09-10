@@ -2,24 +2,19 @@
 
 	app.fillColors = [ "#ff0000", "#ff579D", "#ffCCA9", "#ffA37A", "#CCA95B", "#AA0000", "#ff9235", "#AA00C3",
 			"#ff4A1B", "#BB4A1B", "#33FF5F", "#11FF98", "#9F3644", "#BB969C", "#0037EB" ];
-
 	app.poligonoArray1 = [];
 	app.municipi;
 	app.infoWindow = [];
-
 	app.scaleAnno = d3.scale.linear().domain([ 0, 1 ]).range([ .1, .9 ]);
-
 	app.scaleMese = d3.scale.linear().domain([ 0, 1 ]).range([ .1, .7 ]);
-
 	app.scaleGiorno = d3.scale.linear().domain([ 0, 1 ]).range([ .1, .5 ]);
-
 
 	/**
 	 * chiude tutte le infowindows aperte
 	 */
-	app.closeAllInfoWindows = function(){
-		for(i=0;i<app.infoWindow.length;i++){
-			app.infoWindow[i].close();	// chiude le infowindow
+	app.closeAllInfoWindows = function() {
+		for (i = 0; i < app.infoWindow.length; i++) {
+			app.infoWindow[i].close(); // chiude le infowindow
 		}
 	}
 	/**
@@ -48,7 +43,7 @@
 	 */
 	app.createClickablePoly = function(poly, html, map) {
 		var infowindow = new google.maps.InfoWindow();
-		
+
 		var contentString = html;
 		google.maps.event.addListener(poly, 'click', function(event) {
 			infowindow.setContent(contentString);
@@ -115,13 +110,16 @@
 	 */
 	app.loadScript = function() {
 
-		if (document.getElementById("google") != null || document.getElementById("google") != undefined) { 
+		if (document.getElementById("google") != null || document.getElementById("google") != undefined) {
 			// se google gia' esiste...
 			app.loadMap(); // carica mappa
 			app.loadMunicipi(); // carica municipi
 		} else { // altrimenti crea lo script
 			// alert("script non trovato, lo creo");
-			var script = document.createElement('script'); // TODO: e' possibile creare lo script nel container?
+			var script = document.createElement('script'); // TODO: e'
+															// possibile creare
+															// lo script nel
+															// container?
 			script.id = "google";
 			script.type = 'text/javascript';
 			script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' + 'callback=app.loadMap';
@@ -133,6 +131,7 @@
 
 	/**
 	 * disegna i municipi cliccabili
+	 * 
 	 * @param municipio
 	 */
 	app.drawPoli = function(municipio, cont, tipo) {
@@ -191,6 +190,9 @@
 		// map1.fitBounds(bound1);
 	};
 
+	/**
+	 * Carica e mostra gli incidenti
+	 */
 	app.loadIncidenti = function() {
 
 		app.clearMap();
@@ -229,19 +231,14 @@
 				var zonaMappa = app.municipi;
 
 				for (var j = 0; j < result.length; j++) { // per ogni mun
-															// riportato
-					for (var i = 0; i < zonaMappa.length; i++) { // cicli su
-																	// tutte le
-																	// zone
-						// console.log("i:"+i);
+					// riportato
+					for (var i = 0; i < zonaMappa.length; i++) {
+						// cicli su tutte le zone
+						//console.log("i:"+i);
 						numeroMunicipio = result[j].municipio;
 						// console.log("numero municipio: "+numeroMunicipio);
 						if (numeroMunicipio == zonaMappa[i].numero) { // quando
-																		// trovi
-																		// una
-																		// zona
-																		// afferente
-																		// a lui
+							// trovi una zona afferente a lui
 							zonaMappa[i].incidenti = result[j]["incidenti"]; // copi
 							zonaMappa[i].totale = result[j]["totale"];
 						}

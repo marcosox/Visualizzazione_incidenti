@@ -327,7 +327,7 @@ function drawHighlightChart(result){
     	  return d.x+": "+d.y;
       });
 
- /* // Add a label per date.
+  // Add a label per date.
   var label = svg.selectAll("text")
       .data(x.domain())
     .enter().append("svg:text")
@@ -338,14 +338,14 @@ function drawHighlightChart(result){
     .attr("dy", ".71em")
     .text( function(d){return d;})
     .attr("transform", function(d) {
-		return "rotate(-90)";
+		return "rotate(-90)";	//-90
 	})
 	.append("svg:title")
 	.text(function(d){
 		return d;
 	});
-  */
   
+  /*
 var xAxis2 = d3.svg.axis().scale(x).orient("bottom"); 
   
   svg.append("g")
@@ -357,16 +357,16 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
 	.attr("dx", "0")	//-.7em
 	.attr("dy", "0")	//.15em
 	.attr("y","0")	// non ne vuole sapere
-	/*.attr("transform", function(d) {
+	//.attr("transform", function(d) {
 		return "rotate(-90)";
-	})*/
+	})
 	.append("svg:title")
 	.text(function(d){
 		//console.log(d);
 		return d;
 	});
  
-
+*/
   // Add y-axis rules.
   var rule = svg.selectAll("g.rule")
       .data(y.ticks(5))
