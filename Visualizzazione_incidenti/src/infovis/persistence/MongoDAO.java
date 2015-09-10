@@ -123,6 +123,21 @@ public class MongoDAO {
 	}
 	
 	/**
+	 * recupera un documento dal db
+	 * @param id id incidente
+	 * @return il documento dell'incidente o un documento vuoto
+	 */
+	public String getAccidentDetails(int id){
+		MongoClient client = new MongoClient();
+		MongoDatabase db = client.getDatabase(this.dbName);
+		MongoCollection<Document> collection = db.getCollection(collectionName);
+		FindIterable<Document> iterable = collection.find(new Document("incidente","incidente"+id));
+		String result = iterable.first()==null?new Document().toJson():iterable.first().toJson();
+		client.close();
+		return result;
+	}
+	
+	/**
 	 * Recupera tutti gli incidenti e li ritorna in una lista per visualizzarli sulla mappa
 	 * @return una lista di oggetti {lat,lon,protocollo}
 	 */
