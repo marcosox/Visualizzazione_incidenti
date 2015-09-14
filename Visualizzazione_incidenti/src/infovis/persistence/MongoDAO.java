@@ -18,7 +18,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDAO {
 	private String dbName = "bigdata";
-	private String collectionName = "incidenti_finale";
+	private String collectionName = "incidenti";
 
 	/**
 	 * Effettua il conto dei documenti in una collezione raggruppati in base ad
@@ -155,6 +155,9 @@ public class MongoDAO {
 				if(d.getString("lat")!=null){
 					mappa.put("lat", d.getString("lat"));
 					mappa.put("lon", d.getString("lon"));
+					mappa.put("anno", d.getString("anno"));
+					mappa.put("numero_gruppo", ""+d.getInteger("numero_gruppo"));
+					mappa.put("ora", ""+d.getInteger("ora"));
 					mappa.put("protocollo", d.getString("incidente").replace("incidente", ""));
 					result.add(new JSONObject(mappa));
 				}

@@ -6,13 +6,75 @@
 </head>
 <body>
 	<h1>Map</h1>
-	<br>
-	Click on a marker to see the accident details.<br>
-	<div id="mapgeo_container">
-	<div id="mapgeo-canvas"></div>
+	<div id="dash">
+
+		Filter by: <label>Year</label> <select name="anno" id="anno"
+			onchange="filtraIncidenti()">
+			<option value="2012">2012</option>
+			<option value="2013">2013</option>
+			<option value="2014">2014</option>
+			<option value="2015">2015</option>
+		</select>
+		
+		<label>Hour</label> 
+		<select name="daytime" id="daytime" onchange="filtraIncidenti()">
+			<option value="0">00:00-00:59</option>
+			<option value="1">01:00-01:59</option>
+			<option value="2">02:00-02:59</option>
+			<option value="3">03:00-03:59</option>
+			<option value="4">04:00-04:59</option>
+			<option value="5">05:00-05:59</option>
+			<option value="6">06:00-06:59</option>
+			<option value="7">07:00-07:59</option>
+			<option value="8">08:00-08:59</option>
+			<option value="9">09:00-09:59</option>
+			<option value="10">10:00-10:59</option>
+			<option value="11">11:00-11:59</option>
+			<option value="12">12:00-12:59</option>
+			<option value="13">13:00-13:59</option>
+			<option value="14">14:00-14:59</option>
+			<option value="15">15:00-15:59</option>
+			<option value="16">16:00-16:59</option>
+			<option value="17">17:00-17:59</option>
+			<option value="18">18:00-18:59</option>
+			<option value="19">19:00-19:59</option>
+			<option value="20">20:00-20:59</option>
+			<option value="21">21:00-21:59</option>
+			<option value="22">22:00-22:59</option>
+			<option value="23">23:00-23:59</option> 
+		</select> 
+		
+		<label>Municipo</label> 
+		<select name="municipio" id="municipio"
+			onchange="filtraIncidenti()">
+			<option value="1">I</option>
+			<option value="2">II</option>
+			<option value="3">III</option>
+			<option value="4">IV</option>
+			<option value="5">V</option>
+			<option value="6">VI</option>
+			<option value="7">VII</option>
+			<option value="8">VIII</option>
+			<option value="9">IX</option>
+			<option value="10">X</option>
+			<option value="11">XI</option>
+			<option value="12">XII</option>
+			<option value="13">XIII</option>
+			<option value="14">XIV</option>
+			<option value="15">XV</option>
+		</select> Click on a marker to see the accident details. <br>
+
 	</div>
+
+	<div id="mapgeo_container">
+		<div id="mapgeo-canvas"></div>
+	</div>
+
+
+
+
 	<script src="js/map_geo.js"></script>
 	<script async defer
-        src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap"></script>
+		src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap"></script>
 </body>
 </html>

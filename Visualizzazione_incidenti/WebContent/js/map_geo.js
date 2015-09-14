@@ -35,55 +35,7 @@ function getGeocodedAccidents() {
 		success : function(result) {
 			dataset = result;
 			myCircle = google.maps.SymbolPath.CIRCLE;
-			for (i = 0; i < 100/* dataset.length */; i++) {
-
-				var marker = new google.maps.Marker({
-					position : {
-						lat : +dataset[i].lat,
-						lng : +dataset[i].lon
-					},
-					map : map,
-					title : "Incidente n." + dataset[i].protocollo,
-					icon : {
-						path : myCircle,
-						scale : 1
-					}
-				});
-				console.log(marker.title);
-				marco = marker;
-				marker.addListener('click', function() {
-					getItemDetails(this.title.substr(12));
-					console.log(currentMarker);
-					closeAllInfoWindows();
-					if(currentMarker!=null){
-						c=currentMarker;
-						infowindow = new google.maps.InfoWindow();
-						contentString = 
-							"<div><b>" + c.incidente + "</b>"
-							+ "<br>Data: " + c.giorno+"-"+c.mese+"-"+c.anno
-							+ "<br>Orario: " + c.ora+":"+c.minuti
-							+ "<br>Municipio: "+ c.numero_gruppo
-							+ "<br>Localizzazione: " + c.strada
-							+ "<br>Coordinate: " + this.position.lat() + ", " + this.position.lng()
-							+ "<br>Dinamica: "+c.dinamica
-							+ "<br>Persone ("+c.persone.length+"):";
-						
-						for(i=0;i<c.persone.length;i++){
-							contentString+="<br> - "+c.persone[i].sesso+" - "+c.persone[i].anno;
-						}
-						contentString +="<br>Veicoli ("+c.veicoli.length+"):";
-						for(i=0;i<c.veicoli.length;i++){
-							contentString+="<br> - "+c.veicoli[i].brand+" "+c.veicoli[i].model;
-						}
-						
-							+ "</div>";
-						infowindow.setContent(contentString);
-						infowindow.open(map, this);
-						infoWindows.push(infowindow);
-					}
-				});
-				markers.push(marker);
-			}
+			filtraIncidenti();			
 		},
 		error : function(result) {
 			console.log("Error retrieving geocoded accidents");
@@ -113,3 +65,78 @@ function getItemDetails(accidentId) {
 	});
 };
 
+function clearMap(){
+	for(var i=0; i<markers.length; i++){
+		markers[i].setMap(null);
+	}
+}
+
+
+function filtraIncidenti(){
+	
+	var anno = document.getElementById("anno").value;
+	var municipio = document.getElementById("municipio").value; 
+	var daytime = document.getElementById("daytime").value; 
+	
+
+	clearMap();
+	
+	for (i = 0; i < dataset.length; i++) {
+		
+		if(municipio == dataset[i].numero_gruppo && 
+				anno == dataset[i].anno && dataset[i].ora == daytime){
+		
+			var marker = new google.maps.Marker({
+				position : {
+					lat : +dataset[i].lat,
+					lng : +dataset[i].lon
+				},
+				map : map,
+				title : "Incidente n." + dataset[i].protocollo,
+				icon : {
+					path : myCircle,
+					scale : 1
+				}
+			});
+//			console.log(marker.title);
+			marco = marker;
+			marker.addListener('click', function() {
+				getItemDetails(this.title.substr(12));
+//				console.log(currentMarker);
+				closeAllInfoWindows();
+				if(currentMarker!=null){
+					c=currentMarker;
+					infowindow = new google.maps.InfoWindow();
+					contentString = 
+						"<div><b>" + c.incidente + "</b>"
+						+ "<br>Data: " + c.giorno+"-"+c.mese+"-"+c.anno
+						+ "<br>Orario: " + c.ora+":"+c.minuti
+						+ "<br>Municipio: "+ c.numero_gruppo
+						+ "<br>Localizzazione: " + c.strada
+						+ "<br>Coordinate: " + this.position.lat() + ", " + this.position.lng()
+						+ "<br>Dinamica: "+c.dinamica
+						+ "<br>Persone ("+c.persone.length+"):";
+					
+					for(i=0;i<c.persone.length;i++){
+						contentString+="<br> - "+c.persone[i].sesso+" - "+c.persone[i].anno;
+					}
+					contentString +="<br>Veicoli ("+c.veicoli.length+"):";
+					for(i=0;i<c.veicoli.length;i++){
+						contentString+="<br> - "+c.veicoli[i].brand+" "+c.veicoli[i].model;
+					}
+					
+						+ "</div>";
+					infowindow.setContent(contentString);
+					infowindow.open(map, this);
+					infoWindows.push(infowindow);
+				}
+			});
+			markers.push(marker);
+			
+			
+		}
+
+	
+	}
+	
+}
