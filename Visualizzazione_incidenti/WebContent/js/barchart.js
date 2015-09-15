@@ -52,7 +52,7 @@ function getCountWithHighlight(field, limit) {
 var margin = {
 	top : 20,
 	right : 20,
-	bottom : 240,
+	bottom : 40,
 	left : 80
 };
 var width = 1100 - margin.left - margin.right;
@@ -124,21 +124,22 @@ function draw(){
 
 	svg.append("g")
 	.attr("class", "x axis")
+	.attr("id","x_axis")
 	.attr("transform", "translate(0," + height + ")")
 	.call(xAxis)
 	.selectAll("text")
+	/*.append("svg:title")
+	.text(function(d){
+		return d;
+	})*/
 	.style("text-anchor", "end")
 	.attr("dx", "-.7em")	//-.7em
 	.attr("dy", ".15em")	//.15em
 	.attr("y","0")	// non ne vuole sapere
 	.attr("transform", function(d) {
 		return "rotate(-90)";
-	})
-	.append("svg:title")
-	.text(function(d){
-		return d;
 	});
-
+	
 	// asse y
 	svg.append("g")
 	.attr("class", "y axis")
@@ -169,6 +170,11 @@ function draw(){
 		return d._id+": "+d.count;
 	});
  
+	// tooltip sulle label dell'asse x
+	svg.selectAll("#x_axis g text").append("svg:title").text(function(d){
+		return d;
+	});
+	
 //	d3.select(".x.axis").selectAll("g").selectAll("text").attr("y","0");
 //	console.log(d3.select(".x.axis").selectAll("g").selectAll("text").attr("y"));
 	d3.selectAll(".bar").on("click", highLightItem);	// listener per la checkbox di sort
@@ -238,7 +244,7 @@ function highLightItem(d,i){
 		currentSelection.value = d._id;
 	}
 	
-	console.log("Highlight su: "+currentSelection.field+" = "+currentSelection.value);
+	//console.log("Highlight su: "+currentSelection.field+" = "+currentSelection.value);
 	refresh2();
 }
 
@@ -281,8 +287,8 @@ function drawHighlightChart(result){
     height2 = 500,
     p = [20, 50, 30, 20],
     
-    x = d3.scale.ordinal().rangeRoundBands([0, width2 - 50 - 20]),	// originale
-    y = d3.scale.linear().range([0, height - 20 - 30]),
+    x = d3.scale.ordinal().rangeRoundBands([0, width2 - p[1] - p[0]]),	// originale
+    y = d3.scale.linear().range([0, height - p[3] - p[2]]),
     z = d3.scale.ordinal().range(["lightblue", "red"]),
     format = d3.time.format("%b");
 
@@ -328,11 +334,16 @@ function drawHighlightChart(result){
       });
 
   // Add a label per date.
-  var label = svg.selectAll("text")
+  var label = svg.selectAll(".rule text")
       .data(x.domain())
     .enter().append("svg:text")
-    .attr("x", function(d) { console.log(d+" - x: "+x(d));return x(d) + x.rangeBand() / 2; })
-    .attr("dx", "-.7em")	//-.7em
+    .attr("x", function(d) {
+    	//console.log(d+" - x: "+x(d));
+    	return x(d) + x.rangeBand() / 2; })
+    .attr("dx", function(d) { 
+    	//console.log(d+" - x: "+x(d));
+    	return x(d) + x.rangeBand() / 2; })
+    //.attr("dx", "-.7em")	//-.7em
 	.attr("y", 6)
     .attr("text-anchor", "end")
     .attr("dy", ".71em")
@@ -344,6 +355,7 @@ function drawHighlightChart(result){
 	.text(function(d){
 		return d;
 	});
+  
   
   /*
 var xAxis2 = d3.svg.axis().scale(x).orient("bottom"); 

@@ -18,7 +18,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDAO {
 	private String dbName = "bigdata";
-	private String collectionName = "incidenti";
+	private String collectionName = "incidenti_finale";
 
 	/**
 	 * Effettua il conto dei documenti in una collezione raggruppati in base ad

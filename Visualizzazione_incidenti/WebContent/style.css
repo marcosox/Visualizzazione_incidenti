@@ -57,6 +57,15 @@ table tr:nth-child(odd) {
     opacity: 0.8;
     filter: alpha(opacity=80);
 }
+.ajax-loader {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  margin: auto;
+}
 .axis text {
   font: 10px sans-serif;
   y:0;
