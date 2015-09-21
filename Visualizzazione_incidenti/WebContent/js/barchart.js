@@ -346,22 +346,30 @@ function drawHighlightChart(result){
 	.enter().append("svg:text")
 	.attr("x", function(d) {
 		//console.log(d+" - x: "+x(d));
-		return x(d) + x.rangeBand() / 2; })
-		.attr("dx", function(d) { 
-			//console.log(d+" - x: "+x(d));
-			return x(d) + x.rangeBand() / 2; })
-			//.attr("dx", "-.7em")	//-.7em
-			.attr("y", 6)
-			.attr("text-anchor", "end")
-			.attr("dy", ".71em")
-			.text( function(d){return d;})
-			.attr("transform", function(d) {
-				return "rotate(-90)";	//-90
-			})
-			.append("svg:title")
-			.text(function(d){
-				return d;
-			});
+		return x(d) + x.rangeBand() / 2; 
+	})
+	.attr("dx", function(d) { 
+		//console.log(d+" - x: "+x(d));
+		return x(d) + x.rangeBand() / 2;
+	})
+	//.attr("dx", "-.7em")	//-.7em
+	.attr("dx", function(d) { 
+		//console.log(d+" - x: "+x(d));
+		return x(d) + x.rangeBand() / 2;
+	})
+	.attr("y", 6)
+	.attr("text-anchor", "end")
+	.attr("dy", ".71em")
+	.text( function(d){
+		return d;
+	})
+//	.attr("transform", function(d) {
+//	return "rotate(-90)";	//-90
+//	})
+	.append("svg:title")
+	.text(function(d){
+		return d;
+	});
 
 
 	/*
@@ -402,7 +410,7 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
 	.attr("x", width2 - p[1] - p[3])
 	.attr("dy", ".35em")
 	.text(function(d){return d;});
-	
-	
+
+
 
 }
