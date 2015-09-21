@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
 import com.mongodb.Block; 
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
@@ -18,7 +20,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDAO {
 	private String dbName = "bigdata";
-	private String collectionName = "incidenti_finale";
+	private String collectionName = "incidenti";
 
 	/**
 	 * Effettua il conto dei documenti in una collezione raggruppati in base ad
@@ -297,6 +299,7 @@ public class MongoDAO {
 		listWithMatch.add(new Document("$group", new Document("_id", "$field").append("count", new Document("$sum", 1))));
 		
 		if(limit>0 && limit <500){
+			
 			list.add(new Document("$sort", new Document("count", -1)));
 			listWithMatch.add(new Document("$sort", new Document("count", -1)));
 			list.add(new Document("$limit", limit));
@@ -309,7 +312,7 @@ public class MongoDAO {
 		AggregateIterable<Document> iterable1 = collection.aggregate(list);
 		AggregateIterable<Document> iterable2 = collection.aggregate(listWithMatch);
 		
-		final Map<String,Document> map = new HashMap<String,Document>();
+		final Map<String,Document> map = new TreeMap<String,Document>();
 		iterable1.forEach(new Block<Document>() {
 			@Override
 			public void apply(Document d) {
