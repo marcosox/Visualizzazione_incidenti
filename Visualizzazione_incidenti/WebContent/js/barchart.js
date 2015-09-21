@@ -77,6 +77,8 @@ var svg = d3.select("#chart")
 .attr("id", "maing")
 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
+
+
 /**
  * chiamata quando scegli un dato da visualizzare, chiama a sua volta la richiesta ajax
  */
@@ -303,8 +305,8 @@ function drawHighlightChart(result){
 	.attr("width", width2)
 	.attr("height", height2)
 	.append("svg:g")
+	.attr("id", "stackg")
 	.attr("transform", "translate(" + p[3] + "," + (height2 - p[2]) + ")");
-
 
 	// Transpose the data into layers by cause.
 	var layers = d3.layout.stack()(["count", "highlight"].map(function(valueType) {
@@ -340,32 +342,43 @@ function drawHighlightChart(result){
 		return d.x+": "+d.y;
 	});
 
+//	d3.select("#stackg").append("g")
+//	.attr("class", "x axis")
+//	.attr("id","x_axis")
+//	.attr("transform", "translate(0," + height + ")")
+//	.call(xAxis)
+//	.selectAll("text")
+//	/*.append("svg:title")
+//	.text(function(d){
+//	return d;
+//	})*/
+//	.style("text-anchor", "end")
+//	.attr("dx", "-.7em")	//-.7em
+//	.attr("dy", ".15em")	//.15em
+//	.attr("y","0")	// non ne vuole sapere
+//	.attr("transform", function(d) {
+//	return "rotate(-90)";
+//	});
+
 	// Add a label per date.
+
 	var label = svg2.selectAll(".rule text")
 	.data(x.domain())
 	.enter().append("svg:text")
-	.attr("x", function(d) {
-		//console.log(d+" - x: "+x(d));
-		return x(d) + x.rangeBand() / 2; 
+	.attr("x", "-1")
+	.attr("dx","0")
+	.attr("y", function(d) { 
+		return -x(d)/1.95;
 	})
-	.attr("dx", function(d) { 
-		//console.log(d+" - x: "+x(d));
-		return x(d) + x.rangeBand() / 2;
+	.attr("dy", function(d) { 
+		return -x(d)/1.95;
 	})
-	//.attr("dx", "-.7em")	//-.7em
-	.attr("dx", function(d) { 
-		//console.log(d+" - x: "+x(d));
-		return x(d) + x.rangeBand() / 2;
+	.attr("transform", function(d) {
+		return "rotate(90)";
 	})
-	.attr("y", 6)
-	.attr("text-anchor", "end")
-	.attr("dy", ".71em")
 	.text( function(d){
 		return d;
 	})
-//	.attr("transform", function(d) {
-//	return "rotate(-90)";	//-90
-//	})
 	.append("svg:title")
 	.text(function(d){
 		return d;
@@ -407,6 +420,7 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
 	.style("stroke-opacity", function(d) { return d ? .7 : null; });
 
 	rule.append("svg:text")
+	.style("text-anchor", "end")
 	.attr("x", width2 - p[1] - p[3])
 	.attr("dy", ".35em")
 	.text(function(d){return d;});
