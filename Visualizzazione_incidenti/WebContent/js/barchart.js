@@ -41,7 +41,7 @@ function getCountWithHighlight(field, limit) {
 			}
 
 			dataset2 = result;
-			drawHighlightChart(dataset2);	// chiama draw e visualizza i dati
+			drawHighlightChart(dataset2,false);	// chiama draw e visualizza i dati
 
 		},
 		error : function(result) {
@@ -286,14 +286,17 @@ function refresh2(){
 	}
 }
 
-function drawHighlightChart(result){
+function drawHighlightChart(result, bool){
+
+	if(svg2!=undefined)
+		svg2.remove();
 
 	// create canvas
 	d3.select("#chart2").html("");
 	d3.select("#highlight-div")[0][0].style.display="";		// mostra la seconda chart       
 
 	var width2 = 960,
-	height2 = 500,
+	height2 = 600,
 	p = [20, 50, 30, 20],
 
 	x = d3.scale.ordinal().rangeRoundBands([0, width2 - p[1] - p[0]]),	// originale
@@ -309,16 +312,28 @@ function drawHighlightChart(result){
 	.attr("transform", "translate(" + p[3] + "," + (height2 - p[2]) + ")");
 
 	// Transpose the data into layers by cause.
-	var layers = d3.layout.stack()(["count", "highlight"].map(function(valueType) {
-		return result.map(function(d) {
-			return {x: d._id, y: +d[valueType]};
-		});
-	}));
+	var layers ;
+
+	if(!bool){
+		layers= d3.layout.stack()(["count", "highlight"].map(function(valueType) {
+			return result.map(function(d) {
+				return {x: d._id, y: +d[valueType]};
+			});
+		}));
+	}
+	else{
+		// Transpose the data into layers by cause.
+		layers  = d3.layout.stack().offset('expand')(["count", "highlight"].map(function(valueType) {
+			return result.map(function(d) {
+				return {x: d._id, y: +d[valueType]};
+			});
+		}));
+	}
 
 
 	// Compute the x-domain (by id) and y-domain (by top).
 	x.domain(layers[0].map(function(d) { return d.x; }));
-	y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]);
+	y.domain([0, d3.max(layers[layers.length - 1], function(d) {  return d.y0 + d.y; })]);
 
 	// Add a group for each cause.
 	var cause = svg2.selectAll("g.cause")
@@ -332,36 +347,22 @@ function drawHighlightChart(result){
 	var rect = cause.selectAll("rect")
 	.data(Object)
 	.enter().append("svg:rect")
-	.attr("x", function(d) { return x(d.x); })
-	.attr("y", function(d) { return -y(d.y0) - y(d.y); })
-	.attr("height", function(d) { return y(d.y); })
+	.attr("x", function(d) { 
+		return x(d.x); 
+	})
+	.attr("y", function(d) { 
+		return -y(d.y0) - y(d.y); 
+	})
+	.attr("height", function(d) { 
+		return y(d.y); 
+	})
 	.attr("width", x.rangeBand())
 	.append("svg:title")
 	.text(function(d){
-		//console.log(d);
-		return d.x+": "+d.y;
+		return d.x+": "+d.y0 +": "+d.y;
 	});
 
-//	d3.select("#stackg").append("g")
-//	.attr("class", "x axis")
-//	.attr("id","x_axis")
-//	.attr("transform", "translate(0," + height + ")")
-//	.call(xAxis)
-//	.selectAll("text")
-//	/*.append("svg:title")
-//	.text(function(d){
-//	return d;
-//	})*/
-//	.style("text-anchor", "end")
-//	.attr("dx", "-.7em")	//-.7em
-//	.attr("dy", ".15em")	//.15em
-//	.attr("y","0")	// non ne vuole sapere
-//	.attr("transform", function(d) {
-//	return "rotate(-90)";
-//	});
-
 	// Add a label per date.
-
 	var label = svg2.selectAll(".rule text")
 	.data(x.domain())
 	.enter().append("svg:text")
@@ -384,29 +385,6 @@ function drawHighlightChart(result){
 		return d;
 	});
 
-
-	/*
-var xAxis2 = d3.svg.axis().scale(x).orient("bottom"); 
-
-  svg.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + height2 + ")")
-	.call(xAxis2)
-	.selectAll("text")
-	//.style("text-anchor", "end")
-	.attr("dx", "0")	//-.7em
-	.attr("dy", "0")	//.15em
-	.attr("y","0")	// non ne vuole sapere
-	//.attr("transform", function(d) {
-		return "rotate(-90)";
-	})
-	.append("svg:title")
-	.text(function(d){
-		//console.log(d);
-		return d;
-	});
-
-	 */
 	// Add y-axis rules.
 	var rule = svg2.selectAll("g.rule")
 	.data(y.ticks(5))
@@ -425,6 +403,6 @@ var xAxis2 = d3.svg.axis().scale(x).orient("bottom");
 	.attr("dy", ".35em")
 	.text(function(d){return d;});
 
-
-
 }
+
+

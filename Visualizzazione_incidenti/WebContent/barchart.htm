@@ -48,7 +48,11 @@
 			<option value="persone.sesso">Persone coinvolte per genere</option>
 			<option value="numero_gruppo">Incidenti per gruppo di polizia municipale intervenuto</option>
 		</select><br>
-		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit2" id="limit2" onchange="refresh2();"> elements.</label><br>
+		<label>Limit results to <input type="number" min="1" value="20" max="100" name="limit2" id="limit2" onchange="refresh2();"> elements.</label>
+		<button onclick="drawHighlightChart(dataset2,true);">Normalize Graph</button>
+		<button onclick="drawHighlightChart(dataset2,false);">Standard Graph</button>
+		<br>
+		
 		<svg id="chart2"></svg>
 		<script src="js/barchart.js"></script>
 	</div>
