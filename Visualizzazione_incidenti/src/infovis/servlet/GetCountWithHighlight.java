@@ -21,7 +21,6 @@ public class GetCountWithHighlight extends HttpServlet {
      */
     public GetCountWithHighlight() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**

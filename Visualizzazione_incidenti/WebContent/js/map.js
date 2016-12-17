@@ -116,7 +116,7 @@
 			app.loadMunicipi(); // carica municipi
 		} else { // altrimenti crea lo script
 			// alert("script non trovato, lo creo");
-			var script = document.createElement('script'); // TODO: e' possibile creare lo script nel container?
+			var script = document.createElement('script'); // e' possibile creare lo script nel container?
 			script.id = "google";
 			script.type = 'text/javascript';
 			script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' + 'callback=app.loadMap';
