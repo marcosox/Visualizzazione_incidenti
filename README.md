@@ -1,7 +1,7 @@
 Visualizzazione incidenti
 =========================
 
-###About this tool:
+### About this tool:
 
 This tool has been realized as an assignment for the [InfoVis course](http://www.dia.uniroma3.it/~infovis) held by Maurizio Patrignani at Roma Tre University and uses the following technologies:
 
@@ -19,12 +19,12 @@ The data is collected from a MongoDB database where it is stored in a custom for
 
 For the records, the data was originally obtained from the [Rome municipality open data website](http://dati.comune.roma.it/cms/it/incidenti_stradali.page) in CSV format, then converted to RDF with [Google Refine](http://openrefine.org/) and manipulated in different ways to learn about semantic web technologies (which included generating an ontology to describe road accidents and using [SPARQL](https://en.wikipedia.org/wiki/SPARQL) to query the data).
 
-###Installation:
+### Installation:
 
-  1. Import the example dataset inside MongoDB. Type this into the shell:  
+  1. Import the example dataset inside MongoDB:  
 `mongoimport --db bigdata --collection incidenti --file /path/to/incidenti_geolocalizzati.json`  
 `mongoimport --db bigdata --collection incidenti --file /path/to/municipi.json`  
-Note: `bigdata` and `incidenti` are the names of the db and the collection (respectively) used inside the java class MongoDAO.java  
+Where `bigdata` and `incidenti` are respectively the db and the collection used inside the java class MongoDAO.java  
   2. Ensure your MongoDB installation is up and running
   3. Generate a suitable format for your servlet container, e.g. generate a WAR file from the source code (this could include [importing the project into eclipse](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-importproject.htm) and then [exporting it into a war file](http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.wst.webtools.doc.user%2Ftopics%2Ftwcrewar.html))
   4. Deploy the web application inside the servlet container (e.g. Tomcat: move the .war file inside the `webapp` folder of the tomcat installation)
