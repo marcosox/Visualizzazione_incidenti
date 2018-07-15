@@ -6,6 +6,16 @@ Visualizzazione incidenti
 - [car-accidents-map-fe](https://github.com/marcosox/car-accidents-map-fe) (Javascript frontend using [D3.js](https://d3js.org/))
 - [car-accidents-map-be](https://github.com/marcosox/car-accidents-map-be) (Java backend, ported from the [Tomcat](http://tomcat.apache.org/) web application to a [Vert.x](https://vertx.io/) verticle)
 
+List of changes made since this version:
+
+- Split tomcat webapp into js frontend and java backend
+- Port backend to Vert.x, going from 9 to 2 classes
+- Refactor backend DAO to use Vert.x Json library and remove google.simpleJson dependency from pom.xml
+- Refactor Mongo DAO class to reuse the client connection and support authentication
+- Add config object in frontend to set backend url
+- convert POST requests to GET
+- Update jquery in frontend
+
 ### About this tool:
 
 This tool has been realized as an assignment for the [InfoVis course](http://www.dia.uniroma3.it/~infovis) held by Maurizio Patrignani at Roma Tre University and uses the following technologies:
