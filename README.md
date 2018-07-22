@@ -10,20 +10,21 @@ List of changes made since this version:
 
 ###### Backend
 - Split tomcat webapp into js frontend and java backend
-- Port to Vert.x, going from 9 to 2 classes
+- Port to Vert.x, going from 9 to ~~2~~ 3 classes
 - Refactor DAO to use Vert.x Json library and remove google.simpleJson dependency from pom.xml
 - Refactor DAO class to reuse the client connection and support authentication
+- Add config.json support with credentials and app configuration
 
 ###### Frontend
 - Add config object to set backend url
-- convert POST requests to GET
+- Convert POST requests to GET
 - Update jquery
 - Clean code to modern standards
 - Make proper use of jquery to make requests on page load
-- bugfixes for old outdated libraries
-- update bootstrap library and template html
-- clean css files and rules
-- optimize d3 code
+- Bugfixes for old outdated libraries
+- Update bootstrap library and template html
+- Clean css files and rules
+- Optimize D3 code
 
 ### About this tool:
 
